@@ -19,7 +19,7 @@
 use std::collections::HashSet;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
-enum LdNodeType {
+enum LdNodeKind {
     Wire,
     Contact,
     Coil,
@@ -28,7 +28,7 @@ enum LdNodeType {
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 struct LdNode {
     label: String,
-    r#type: LdNodeType,
+    kind: LdNodeKind,
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
@@ -62,7 +62,7 @@ fn main() {
     let node_0 = AstNode::LdNode(
         LdNode{
             label: "node_0".to_string(),
-            r#type: LdNodeType::Contact,
+            kind: LdNodeKind::Contact,
         },
     );
 
@@ -81,7 +81,7 @@ fn main() {
     let node_1 = AstNode::LdNode(
         LdNode{
             label: "node_1".to_string(),
-            r#type: LdNodeType::Contact,
+            kind: LdNodeKind::Contact,
         }
     );
     let mut net_1 = create_ast_net("net_1");
