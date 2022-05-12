@@ -41,8 +41,8 @@ enum AstNode {
 #[derive(Debug, Clone)]
 struct AstNet {
     label: String,
-    in_nodes: HashSet<AstNode>,
-    out_nodes: HashSet<AstNode>,
+    sources: HashSet<AstNode>,
+    sinks: HashSet<AstNode>,
 }
 
 fn create_ast_node<S>(label: S, kind: LdNodeKind) -> AstNode
@@ -58,8 +58,8 @@ fn create_ast_net<S>(label: S) -> AstNet
 where S: Into<String> {
     AstNet{
         label: label.into(),
-        in_nodes: HashSet::new(),
-        out_nodes: HashSet::new(),
+        sources: HashSet::new(),
+        sinks: HashSet::new(),
     }
 }
 
@@ -70,12 +70,12 @@ fn main() {
 
     let node_0 = create_ast_node("node_0", LdNodeKind::Contact);
     let mut net_0 = create_ast_net("net_0");
-    net_0.out_nodes.insert(node_0);
+    net_0.sinks.insert(node_0);
     ast_nets.push(net_0);
 
     let node_1 = create_ast_node("node_1", LdNodeKind::Contact);
     let mut net_1 = create_ast_net("net_1");
-    net_1.out_nodes.insert(node_1);
+    net_1.sinks.insert(node_1);
     ast_nets.push(net_1);
 
     dbg!(ast_nets);
