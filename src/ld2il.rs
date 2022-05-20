@@ -48,14 +48,14 @@ where S: Into<String> {
     };
 
     if let Some(sources) = sources {
-        sources.into_iter().for_each(|src| {
-            net.sources.insert(src);
+        sources.into_iter().for_each(|s| {
+            net.sources.insert(s);
         });
     }
 
     if let Some(sinks) = sinks {
-        sinks.into_iter().for_each(|snk| {
-            net.sinks.insert(snk);
+        sinks.into_iter().for_each(|s| {
+            net.sinks.insert(s);
         });
     }
 

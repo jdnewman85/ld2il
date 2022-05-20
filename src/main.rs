@@ -1,7 +1,7 @@
-use maplit::hashset;
-
 pub mod ld2il;
 pub use crate::ld2il::*;
+
+use maplit::hashset;
 
 fn main() {
     println!("Hello, world!");
@@ -27,7 +27,12 @@ fn main() {
     ast_nets.push(
         AstNet {
             label: "net_2".into(),
-            sinks: hashset!{create_ast_node("node_2", LdNodeKind::Contact)},
+            sinks: hashset!{
+                AstNode::LdNode(LdNode{
+                    label: "node_2".into(),
+                    kind: LdNodeKind::Coil,
+                }),
+            },
             ..Default::default()
         }
     );
