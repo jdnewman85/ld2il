@@ -18,27 +18,32 @@
 
 use std::collections::HashSet;
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+use maplit::hashset;
+
+#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
 enum LdNodeKind {
+    #[default]
     Wire,
     Contact,
     Coil,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
 struct LdNode {
     label: String,
     kind: LdNodeKind,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
 enum AstNode {
+    #[default]
+    None,
     LdNode(LdNode),
     AndOperation,
     OrOperation,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 struct AstNet {
     label: String,
     sources: HashSet<AstNode>,
@@ -96,6 +101,14 @@ fn main() {
             Some(vec![create_ast_node("node_1", LdNodeKind::Contact)]),
             None,
         )
+    );
+
+    ast_nets.push(
+        AstNet {
+            label: "net_2".into(),
+            sinks: hashset!{create_ast_node("node_2", LdNodeKind::Contact)},
+            ..Default::default()
+        }
     );
 
     dbg!(ast_nets);
