@@ -54,13 +54,27 @@ where S: Into<String> {
         }
     )
 }
-fn create_ast_net<S>(label: S) -> AstNet
+fn create_ast_net<S>(label: S, sources: Option<Vec<AstNode>>, sinks: Option<Vec<AstNode>>) -> AstNet
 where S: Into<String> {
-    AstNet{
+    let mut net = AstNet {
         label: label.into(),
         sources: HashSet::new(),
         sinks: HashSet::new(),
+    };
+
+    if let Some(sources) = sources {
+        sources.into_iter().for_each(|src| {
+            net.sources.insert(src);
+        });
     }
+
+    if let Some(sinks) = sinks {
+        sinks.into_iter().for_each(|snk| {
+            net.sinks.insert(snk);
+        });
+    }
+
+    net
 }
 
 fn main() {
@@ -68,15 +82,21 @@ fn main() {
 
     let mut ast_nets = Vec::new();
 
-    let node_0 = create_ast_node("node_0", LdNodeKind::Contact);
-    let mut net_0 = create_ast_net("net_0");
-    net_0.sinks.insert(node_0);
-    ast_nets.push(net_0);
+    ast_nets.push(
+        create_ast_net(
+            "net_0",
+            Some(vec![create_ast_node("node_0", LdNodeKind::Contact)]),
+            None,
+        )
+    );
 
-    let node_1 = create_ast_node("node_1", LdNodeKind::Contact);
-    let mut net_1 = create_ast_net("net_1");
-    net_1.sinks.insert(node_1);
-    ast_nets.push(net_1);
+    ast_nets.push(
+        create_ast_net(
+            "net_1",
+            Some(vec![create_ast_node("node_1", LdNodeKind::Contact)]),
+            None,
+        )
+    );
 
     dbg!(ast_nets);
 }
