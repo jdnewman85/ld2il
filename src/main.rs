@@ -1,41 +1,15 @@
 pub mod ld2il;
 pub use crate::ld2il::*;
 
-use maplit::hashset;
-
 fn main() {
     println!("Hello, world!");
 
-    let mut ast_nets = Vec::new();
+    let x0 = create_element_node("X0", LdElementKind::Contact);
+    let x1 = create_element_node("X1", LdElementKind::Contact);
 
-    ast_nets.push(
-        create_ast_net(
-            "net_0",
-            Some(vec![create_ast_node("node_0", LdNodeKind::Contact)]),
-            None,
-        )
-    );
 
-    ast_nets.push(
-        create_ast_net(
-            "net_1",
-            Some(vec![create_ast_node("node_1", LdNodeKind::Contact)]),
-            None,
-        )
-    );
+    let op = create_operation_node(&x0, &x1);
 
-    ast_nets.push(
-        AstNet {
-            label: "net_2".into(),
-            sinks: hashset!{
-                AstNode::LdNode(LdNode{
-                    label: "node_2".into(),
-                    kind: LdNodeKind::Coil,
-                }),
-            },
-            ..Default::default()
-        }
-    );
+    dbg!(op);
 
-    dbg!(ast_nets);
 }

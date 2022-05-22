@@ -1,7 +1,38 @@
 use std::collections::HashSet;
 
+
+/*
+ * LadderTile
+ *   Wire
+ *     Horizontal (and)
+ *     Vertical   ( or)
+ *     Both
+ *    Contact
+ *      NO
+ *      NC
+ *    Coil
+ * LadderDiagram
+ *   [][]LadderTile
+ *
+ * LadderNode
+ *   Contact
+ *   Coil
+ *   LadderConnection
+ *     AndOperation
+ *     OrOperation
+ *
+ *     Sources []LadderNode
+ *     Sinks   []LadderNode
+ *
+ * LadderLogicRung
+ *   LadderLogicTree<LadderNode>
+ * LadderConnectionDiagram
+ *   []LadderRung
+ * 
+ */
+
 #[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
-pub enum LdNodeKind {
+pub enum LdElementKind {
     #[default]
     Wire,
     Contact,
@@ -9,39 +40,54 @@ pub enum LdNodeKind {
 }
 
 #[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
-pub struct LdNode {
+pub struct LdElement {
     pub label: String,
-    pub kind: LdNodeKind,
+    pub kind: LdElementKind,
 }
 
 #[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
-pub enum AstNode {
+pub enum OperationKind {
+    #[default]
+    And,
+    Or,
+}
+
+#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
+pub enum LdNode<'a> {
     #[default]
     None,
-    LdNode(LdNode),
-    AndOperation,
-    OrOperation,
+    LdElement(LdElement),
+    Operation(OperationKind, &'a LdNode<'a>, &'a LdNode<'a>),
 }
 
 #[derive(Debug, Default, Clone)]
-pub struct AstNet {
+pub struct LdConnection<'a> {
     pub label: String,
-    pub sources: HashSet<AstNode>,
-    pub sinks: HashSet<AstNode>,
+    pub sources: HashSet<LdNode<'a>>,
+    pub sinks: HashSet<LdNode<'a>>,
 }
 
-pub fn create_ast_node<S>(label: S, kind: LdNodeKind) -> AstNode
+pub fn create_operation_node<'a>(op1: &'a LdNode<'a>, op2: &'a LdNode<'a>) -> LdNode<'a> {
+    LdNode::Operation(
+        OperationKind::And,
+        op1,
+        op2,
+    )
+}
+
+pub fn create_element_node<'a, S>(label: S, kind: LdElementKind) -> LdNode<'a>
 where S: Into<String> {
-    AstNode::LdNode(
-        LdNode{
+    LdNode::LdElement(
+        LdElement{
             label: label.into(),
             kind,
         }
     )
 }
-pub fn create_ast_net<S>(label: S, sources: Option<Vec<AstNode>>, sinks: Option<Vec<AstNode>>) -> AstNet
+
+pub fn create_connection<'a, S>(label: S, sources: Option<Vec<LdNode<'a>>>, sinks: Option<Vec<LdNode<'a>>>) -> LdConnection<'a>
 where S: Into<String> {
-    let mut net = AstNet {
+    let mut con = LdConnection {
         label: label.into(),
         sources: HashSet::new(),
         sinks: HashSet::new(),
@@ -49,15 +95,15 @@ where S: Into<String> {
 
     if let Some(sources) = sources {
         sources.into_iter().for_each(|s| {
-            net.sources.insert(s);
+            con.sources.insert(s);
         });
     }
 
     if let Some(sinks) = sinks {
         sinks.into_iter().for_each(|s| {
-            net.sinks.insert(s);
+            con.sinks.insert(s);
         });
     }
 
-    net
+    con
 }
