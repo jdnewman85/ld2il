@@ -8,17 +8,17 @@ fn main() {
 
     let mut ld = ld2il::Ladder::new();
 
-    let x0 = ld.new_element(ElementKind::Contact, "X0");
-    let x1 = ld.new_element(ElementKind::Contact, "X1");
-    let y1 = ld.new_element(ElementKind::Coil, "Y0");
-    dbg!(x0, x1, y1);
+    let x0 = new_element(ElementKind::Contact, "X0");
+    let x1 = new_element(ElementKind::Contact, "X1");
+    let y1 = new_element(ElementKind::Coil, "Y0");
+    //dbg!(x0, x1, y1);
 
     let con_0 = ld.new_connection(
         HashSet::new(),
-        ["X0".into(), "X1".into()].into(),
+        [x0.clone(), x1.clone()].into(),
     );
     let con_1 = ld.new_connection(
-        ["X0".into(), "X1".into()].into(),
+        [x0, x1].into(),
         HashSet::new(),
     );
 
