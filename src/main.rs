@@ -86,5 +86,14 @@ fn main() {
         HashSet::new(),
     );
 
+    let ast_node_0 = ld.new_ast_node(
+        AstNodeKind::Node(x00)
+    );
+    let ast_node_1 = ld.new_ast_node(
+        AstNodeKind::Node(x01)
+    );
+    //let oper_0 =
+    ld.new_ast_operation(AstOperationKind::And, ast_node_0, ast_node_1);
+
     dbg!(ld);
 }
