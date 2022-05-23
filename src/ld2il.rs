@@ -80,7 +80,6 @@ pub struct AstOperation {
 
 
 
-
 #[derive(Debug, Clone)]
 pub struct Ladder {
     pub nodes: Vec<Node>,
@@ -121,7 +120,7 @@ impl Ladder {
         let id = self.connections.len() as u32;
 
         self.connections.push(
-            Connection { 
+            Connection {
                 id: id.into(),
                 sources: sources.into(),
                 sinks: sinks.into(),
@@ -143,8 +142,7 @@ impl Ladder {
         id.into()
     }
 
-    pub fn new_ast_operation(&mut self, kind: AstOperationKind, op1: AstNodeId, op2: AstNodeId) -> AstOperationId
-    {
+    pub fn new_ast_operation(&mut self, kind: AstOperationKind, op1: AstNodeId, op2: AstNodeId) -> AstOperationId {
         let id = self.ast_operations.len() as u32;
 
         self.ast_operations.push(
@@ -157,6 +155,12 @@ impl Ladder {
         );
 
         id.into()
+    }
+
+    pub fn new_ast_node_from_operation(&mut self, op: AstOperationId) -> AstNodeId {
+        self.new_ast_node(
+            AstNodeKind::AstOperation(op),
+        )
     }
 }
 

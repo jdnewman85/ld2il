@@ -92,8 +92,10 @@ fn main() {
     let ast_node_x01 = ld.new_ast_node(
         AstNodeKind::Node(x01)
     );
-    //let ast_and0 =
+    let and0 =
     ld.new_ast_operation(AstOperationKind::And, ast_node_x00, ast_node_x01);
+    let ast_and0 =
+    ld.new_ast_node_from_operation(and0);
 
     let ast_node_x03 = ld.new_ast_node(
         AstNodeKind::Node(x03)
@@ -101,8 +103,14 @@ fn main() {
     let ast_node_x04 = ld.new_ast_node(
         AstNodeKind::Node(x04)
     );
-    //let ast_or0 =
+    let or0 =
     ld.new_ast_operation(AstOperationKind::Or, ast_node_x03, ast_node_x04);
+    let ast_or0 =
+    ld.new_ast_node_from_operation(or0);
+
+    let and1 =
+    ld.new_ast_operation(AstOperationKind::Or, ast_and0, ast_or0);
+    let ast_and1 = ld.new_ast_node_from_operation(and1);
 
     dbg!(ld);
 }
