@@ -1,8 +1,6 @@
 pub mod ld2il;
 pub use crate::ld2il::*;
 
-use maplit::hashset;
-
 use std::collections::HashSet;
 
 fn main() {
@@ -17,10 +15,10 @@ fn main() {
 
     let con_0 = ld.new_connection(
         HashSet::new(),
-        hashset!["X0".into(), "X1".into()],
+        ["X0".into(), "X1".into()].into(),
     );
     let con_1 = ld.new_connection(
-        hashset!["X0".into(), "X1".into()],
+        ["X0".into(), "X1".into()].into(),
         HashSet::new(),
     );
 
