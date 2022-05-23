@@ -37,7 +37,7 @@ pub enum ElementKind {
     Contact,
     Coil,
 }
-type ElementId = u32;
+pub type ElementId = u32;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct Element {
