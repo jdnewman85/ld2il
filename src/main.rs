@@ -31,57 +31,57 @@ fn main() {
         [x00].into(),
     );
     //let a =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x00].into(),
         [x01].into(),
     );
     //let b =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x01].into(),
         [x02, x03].into(),
     );
     //let c =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x02, x03].into(),
         [x04].into(),
     );
     //let d =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x04].into(),
         [x05, x07].into(),
     );
     //let e =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x05].into(),
         [x06].into(),
     );
     //let f =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x07].into(),
         [x08].into(),
     );
     //let g =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x06, x08].into(),
         [x09].into(),
     );
     //let h =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x09].into(),
         [x13].into(),
     );
     //let i =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x13, x10, x12].into(),
         [y00, y01].into(),
     );
     //let j =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [x11].into(),
         [x12].into(),
     );
     //let l2 =
-    ld.new_connection::<HashSet<ElementId>>(
+    ld.new_connection(
         [y00, y01].into(),
         HashSet::new(),
     );

@@ -47,7 +47,7 @@ pub struct Element {
 }
 
 
-type ConnectionId = u32;
+pub type ConnectionId = u32;
 #[derive(Debug, Clone)]
 pub struct Connection {
     id: ConnectionId,
@@ -99,8 +99,7 @@ impl Ladder {
         id
     }
 
-    pub fn new_connection<T>(&mut self, sources: T, sinks: T) -> u32
-    where T: Into<HashSet<ElementId>>
+    pub fn new_connection(&mut self, sources: HashSet<ElementId>, sinks: HashSet<ElementId>) -> u32
     {
         let id = self.connections.len() as u32;
 
