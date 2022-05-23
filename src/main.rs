@@ -105,7 +105,9 @@ fn main() {
     ld.new_ast_operation(AstOperationKind::Or, ast_node_x03, ast_node_x04);
 
     let ast_and1 =
-    ld.new_ast_operation(AstOperationKind::Or, ast_and0, ast_or0);
+    ld.new_ast_operation(AstOperationKind::And, ast_and0, ast_or0);
 
-    dbg!(ld);
+    ld.print_ast_node(ast_and1);
+
+    //dbg!(ld);
 }

@@ -40,7 +40,6 @@ pub struct Connection {
 
 #[derive(Debug, Clone)]
 pub enum AstNodeKind {
-    None, //TODO Eval
     Node(NodeId),
     AstOperation(AstOperationId),
 }
@@ -161,6 +160,53 @@ impl Ladder {
         self.new_ast_node(
             AstNodeKind::AstOperation(op),
         )
+    }
+
+    pub fn print_ast_node(&self, id: AstNodeId) {
+        let node = self.ast_nodes[id.id as usize].clone();
+        //println!("AstNode: {:?}", node);
+        match node.kind {
+            AstNodeKind::Node(node_id) => {
+                //println!("Node id: {:?}", node_id);
+                self.print_node(node_id);
+            }
+            AstNodeKind::AstOperation(op_id) => {
+                //println!("Op id: {:?}", op_id);
+                self.print_operation(op_id)
+            }
+        }
+    }
+
+    pub fn print_node(&self, id: NodeId) {
+        let node = self.nodes[id.id as usize].clone();
+        //println!("Node: {:?}", node);
+        match node.kind {
+            NodeKind::Contact => {
+                //println!("Contact:");
+                println!("PUSH {}", node.label);
+            }
+            NodeKind::Coil => {
+                //println!("Coil:");
+                println!("OUT {}", node.label);
+            }
+        }
+    }
+
+    pub fn print_operation(&self, id: AstOperationId) {
+        let node = self.ast_operations[id.id as usize].clone();
+        //println!("Operation: {:?}", node);
+
+        self.print_ast_node(node.op1);
+        self.print_ast_node(node.op2);
+
+        match node.kind {
+            AstOperationKind::And => {
+                println!("AND");
+            }
+            AstOperationKind::Or => {
+                println!("OR");
+            }
+        }
     }
 }
 
