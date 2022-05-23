@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-
 /*
  * LadderTile
  *   Wire
@@ -31,79 +30,83 @@ use std::collections::HashSet;
  * 
  */
 
-#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
-pub enum LdElementKind {
-    #[default]
-    Wire,
+#[derive(Debug, Copy, Clone)]
+pub enum ElementKind {
+    HWire,
+    VWire,
     Contact,
     Coil,
 }
+type ElementId = String;
 
-#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
-pub struct LdElement {
-    pub label: String,
-    pub kind: LdElementKind,
+#[derive(Debug, Clone)]
+pub struct Element {
+    pub kind: ElementKind,
+    pub id: ElementId,
 }
 
-#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
+
+type ConnectionId = u32;
+type HashSet_ElementId = HashSet<ElementId>;
+#[derive(Debug, Clone)]
+pub struct Connection {
+    id: ConnectionId,
+    pub sources: HashSet_ElementId,
+    pub sinks: HashSet_ElementId,
+}
+
+#[derive(Debug, Copy, Clone)]
 pub enum OperationKind {
-    #[default]
     And,
     Or,
 }
 
-#[derive(Debug, Default, Clone, Hash, Eq, PartialEq)]
-pub enum LdNode<'a> {
-    #[default]
-    None,
-    LdElement(LdElement),
-    Operation(OperationKind, &'a LdNode<'a>, &'a LdNode<'a>),
+#[derive(Debug, Clone)]
+pub struct Operation {
+    pub kind: OperationKind,
+    pub op1: ElementId,
+    pub op2: ElementId,
 }
 
-#[derive(Debug, Default, Clone)]
-pub struct LdConnection<'a> {
-    pub label: String,
-    pub sources: HashSet<LdNode<'a>>,
-    pub sinks: HashSet<LdNode<'a>>,
+#[derive(Debug, Clone)]
+pub struct Ladder {
+    pub elements: Vec<Element>,
+    pub connections: Vec<Connection>,
 }
 
-pub fn create_operation_node<'a>(op1: &'a LdNode<'a>, op2: &'a LdNode<'a>) -> LdNode<'a> {
-    LdNode::Operation(
-        OperationKind::And,
-        op1,
-        op2,
-    )
-}
-
-pub fn create_element_node<'a, S>(label: S, kind: LdElementKind) -> LdNode<'a>
-where S: Into<String> {
-    LdNode::LdElement(
-        LdElement{
-            label: label.into(),
-            kind,
+impl Ladder {
+    pub fn new() -> Ladder {
+        Ladder {
+            elements: Vec::new(),
+            connections: Vec::new(),
         }
-    )
-}
-
-pub fn create_connection<'a, S>(label: S, sources: Option<Vec<LdNode<'a>>>, sinks: Option<Vec<LdNode<'a>>>) -> LdConnection<'a>
-where S: Into<String> {
-    let mut con = LdConnection {
-        label: label.into(),
-        sources: HashSet::new(),
-        sinks: HashSet::new(),
-    };
-
-    if let Some(sources) = sources {
-        sources.into_iter().for_each(|s| {
-            con.sources.insert(s);
-        });
     }
 
-    if let Some(sinks) = sinks {
-        sinks.into_iter().for_each(|s| {
-            con.sinks.insert(s);
-        });
+    pub fn new_element<S>(&mut self, kind: ElementKind, id: S)
+    where S: Into<ElementId>
+    {
+        self.elements.push(
+            Element {
+                kind,
+                id: id.into(),
+            }
+        );
     }
 
-    con
+    pub fn new_connection<S>(&mut self, sources: S, sinks: S) -> u32
+    where S: Into<HashSet_ElementId>
+    {
+        let id = self.connections.len() as u32;
+
+        self.connections.push(
+            Connection { 
+                id,
+                sources: sources.into(),
+                sinks: sinks.into(),
+            }
+        );
+
+        id
+    }
 }
+
