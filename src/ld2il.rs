@@ -142,7 +142,7 @@ impl Ladder {
         id.into()
     }
 
-    pub fn new_ast_operation(&mut self, kind: AstOperationKind, op1: AstNodeId, op2: AstNodeId) -> AstOperationId {
+    pub fn new_ast_operation(&mut self, kind: AstOperationKind, op1: AstNodeId, op2: AstNodeId) -> AstNodeId {
         let id = self.ast_operations.len() as u32;
 
         self.ast_operations.push(
@@ -154,10 +154,10 @@ impl Ladder {
             }
         );
 
-        id.into()
+        self.new_ast_node_from_operation(id.into())
     }
 
-    pub fn new_ast_node_from_operation(&mut self, op: AstOperationId) -> AstNodeId {
+    fn new_ast_node_from_operation(&mut self, op: AstOperationId) -> AstNodeId {
         self.new_ast_node(
             AstNodeKind::AstOperation(op),
         )
