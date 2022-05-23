@@ -1,35 +1,5 @@
 use std::collections::HashSet;
 
-/*
- * LadderTile
- *   Wire
- *     Horizontal (and)
- *     Vertical   ( or)
- *     Both
- *    Contact
- *      NO
- *      NC
- *    Coil
- * LadderDiagram
- *   [][]LadderTile
- *
- * LadderNode
- *   Contact
- *   Coil
- *   LadderConnection
- *     AndOperation
- *     OrOperation
- *
- *     Sources []LadderNode
- *     Sinks   []LadderNode
- *
- * LadderLogicRung
- *   LadderLogicTree<LadderNode>
- * LadderConnectionDiagram
- *   []LadderRung
- * 
- */
-
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 pub enum NodeKind {
     Contact,

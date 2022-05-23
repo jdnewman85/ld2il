@@ -86,14 +86,23 @@ fn main() {
         HashSet::new(),
     );
 
-    let ast_node_0 = ld.new_ast_node(
+    let ast_node_x00 = ld.new_ast_node(
         AstNodeKind::Node(x00)
     );
-    let ast_node_1 = ld.new_ast_node(
+    let ast_node_x01 = ld.new_ast_node(
         AstNodeKind::Node(x01)
     );
-    //let oper_0 =
-    ld.new_ast_operation(AstOperationKind::And, ast_node_0, ast_node_1);
+    //let ast_and0 =
+    ld.new_ast_operation(AstOperationKind::And, ast_node_x00, ast_node_x01);
+
+    let ast_node_x03 = ld.new_ast_node(
+        AstNodeKind::Node(x03)
+    );
+    let ast_node_x04 = ld.new_ast_node(
+        AstNodeKind::Node(x04)
+    );
+    //let ast_or0 =
+    ld.new_ast_operation(AstOperationKind::Or, ast_node_x03, ast_node_x04);
 
     dbg!(ld);
 }
