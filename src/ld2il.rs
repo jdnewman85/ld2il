@@ -31,18 +31,18 @@ use std::collections::HashSet;
  */
 
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
-pub enum ElementKind {
+pub enum NodeKind {
     HWire,
     VWire,
     Contact,
     Coil,
 }
-pub type ElementId = u32;
+pub type NodeId = u32;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
-pub struct Element {
-    pub kind: ElementKind,
-    pub id: ElementId,
+pub struct Node {
+    pub kind: NodeKind,
+    pub id: NodeId,
     pub label: String,
 }
 
@@ -51,8 +51,8 @@ pub type ConnectionId = u32;
 #[derive(Debug, Clone)]
 pub struct Connection {
     id: ConnectionId,
-    pub sources: HashSet<ElementId>,
-    pub sinks: HashSet<ElementId>,
+    pub sources: HashSet<NodeId>,
+    pub sinks: HashSet<NodeId>,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -64,13 +64,13 @@ pub enum OperationKind {
 #[derive(Debug, Clone)]
 pub struct Operation {
     pub kind: OperationKind,
-    pub op1: ElementId,
-    pub op2: ElementId,
+    pub op1: NodeId,
+    pub op2: NodeId,
 }
 
 #[derive(Debug, Clone)]
 pub struct Ladder {
-    pub elements: Vec<Element>,
+    pub nodes: Vec<Node>,
     pub connections: Vec<Connection>,
 }
 
@@ -78,18 +78,18 @@ pub struct Ladder {
 impl Ladder {
     pub fn new() -> Ladder {
         Ladder {
-            elements: Vec::new(),
+            nodes: Vec::new(),
             connections: Vec::new(),
         }
     }
 
-    pub fn new_element<S>(&mut self, kind: ElementKind, label: S) -> ElementId
+    pub fn new_node<S>(&mut self, kind: NodeKind, label: S) -> NodeId
     where S: Into<String>,
     {
-        let id = self.elements.len() as u32;
+        let id = self.nodes.len() as u32;
 
-        self.elements.push(
-            Element {
+        self.nodes.push(
+            Node {
                 kind,
                 id: id.into(),
                 label: label.into(),
@@ -99,7 +99,7 @@ impl Ladder {
         id
     }
 
-    pub fn new_connection(&mut self, sources: HashSet<ElementId>, sinks: HashSet<ElementId>) -> u32
+    pub fn new_connection(&mut self, sources: HashSet<NodeId>, sinks: HashSet<NodeId>) -> u32
     {
         let id = self.connections.len() as u32;
 

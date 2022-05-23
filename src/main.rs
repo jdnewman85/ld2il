@@ -8,22 +8,22 @@ fn main() {
 
     let mut ld = ld2il::Ladder::new();
 
-    let x00 = ld.new_element(ElementKind::Contact, "X00");
-    let x01 = ld.new_element(ElementKind::Contact, "X01");
-    let x02 = ld.new_element(ElementKind::Contact, "X02");
-    let x03 = ld.new_element(ElementKind::Contact, "X03");
-    let x04 = ld.new_element(ElementKind::Contact, "X04");
-    let x05 = ld.new_element(ElementKind::Contact, "X05");
-    let x06 = ld.new_element(ElementKind::Contact, "X06");
-    let x07 = ld.new_element(ElementKind::Contact, "X07");
-    let x08 = ld.new_element(ElementKind::Contact, "X08");
-    let x09 = ld.new_element(ElementKind::Contact, "X09");
-    let x10 = ld.new_element(ElementKind::Contact, "X10");
-    let x11 = ld.new_element(ElementKind::Contact, "X11");
-    let x12 = ld.new_element(ElementKind::Contact, "X12");
-    let x13 = ld.new_element(ElementKind::Contact, "X13");
-    let y00 = ld.new_element(ElementKind::Coil,    "Y00");
-    let y01 = ld.new_element(ElementKind::Coil,    "Y01");
+    let x00 = ld.new_node(NodeKind::Contact, "X00");
+    let x01 = ld.new_node(NodeKind::Contact, "X01");
+    let x02 = ld.new_node(NodeKind::Contact, "X02");
+    let x03 = ld.new_node(NodeKind::Contact, "X03");
+    let x04 = ld.new_node(NodeKind::Contact, "X04");
+    let x05 = ld.new_node(NodeKind::Contact, "X05");
+    let x06 = ld.new_node(NodeKind::Contact, "X06");
+    let x07 = ld.new_node(NodeKind::Contact, "X07");
+    let x08 = ld.new_node(NodeKind::Contact, "X08");
+    let x09 = ld.new_node(NodeKind::Contact, "X09");
+    let x10 = ld.new_node(NodeKind::Contact, "X10");
+    let x11 = ld.new_node(NodeKind::Contact, "X11");
+    let x12 = ld.new_node(NodeKind::Contact, "X12");
+    let x13 = ld.new_node(NodeKind::Contact, "X13");
+    let y00 = ld.new_node(NodeKind::Coil,    "Y00");
+    let y01 = ld.new_node(NodeKind::Coil,    "Y01");
 
     //let l1 =
     ld.new_connection(
