@@ -37,12 +37,13 @@ pub enum ElementKind {
     Contact,
     Coil,
 }
-type ElementId = String;
+type ElementId = u32;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct Element {
     pub kind: ElementKind,
     pub id: ElementId,
+    pub label: String,
 }
 
 
@@ -50,8 +51,8 @@ type ConnectionId = u32;
 #[derive(Debug, Clone)]
 pub struct Connection {
     id: ConnectionId,
-    pub sources: HashSet<Element>,
-    pub sinks: HashSet<Element>,
+    pub sources: HashSet<ElementId>,
+    pub sinks: HashSet<ElementId>,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -69,28 +70,37 @@ pub struct Operation {
 
 #[derive(Debug, Clone)]
 pub struct Ladder {
+    pub elements: Vec<Element>,
     pub connections: Vec<Connection>,
 }
 
-pub fn new_element<S>(kind: ElementKind, id: S) -> Element
-where S: Into<ElementId>
-{
-    Element {
-        kind,
-        id: id.into(),
-    }
-}
 
 impl Ladder {
     pub fn new() -> Ladder {
         Ladder {
+            elements: Vec::new(),
             connections: Vec::new(),
         }
     }
 
+    pub fn new_element<S>(&mut self, kind: ElementKind, label: S) -> ElementId
+    where S: Into<String>,
+    {
+        let id = self.elements.len() as u32;
 
-    pub fn new_connection<S>(&mut self, sources: S, sinks: S) -> u32
-    where S: Into<HashSet<Element>>
+        self.elements.push(
+            Element {
+                kind,
+                id: id.into(),
+                label: label.into(),
+            }
+        );
+
+        id
+    }
+
+    pub fn new_connection<T>(&mut self, sources: T, sinks: T) -> u32
+    where T: Into<HashSet<ElementId>>
     {
         let id = self.connections.len() as u32;
 

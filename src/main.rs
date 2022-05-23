@@ -8,9 +8,9 @@ fn main() {
 
     let mut ld = ld2il::Ladder::new();
 
-    let x0 = new_element(ElementKind::Contact, "X0");
-    let x1 = new_element(ElementKind::Contact, "X1");
-    let y1 = new_element(ElementKind::Coil, "Y0");
+    let x0 = ld.new_element(ElementKind::Contact, "X0");
+    let x1 = ld.new_element(ElementKind::Contact, "X1");
+    let y1 = ld.new_element(ElementKind::Coil, "Y0");
     //dbg!(x0, x1, y1);
 
     let con_0 = ld.new_connection(
