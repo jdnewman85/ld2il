@@ -1,9 +1,18 @@
+
+/*
+ * Do I need the ladder object?
+ * Could I instead use the underlying collections directly?
+ *
+ */
+
+
 pub mod ld2il;
 pub use crate::ld2il::*;
 
 use std::collections::HashSet;
+use std::error::Error;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     println!("Hello, world!");
 
     let mut ld = ld2il::Ladder::new();
@@ -86,6 +95,8 @@ fn main() {
         HashSet::new(),
     );
 
+//    /*
+    //AstNode and AstOperation Tests
     let ast_node_x00 = ld.new_ast_node(
         AstNodeKind::Node(x00)
     );
@@ -108,6 +119,9 @@ fn main() {
     ld.new_ast_operation(AstOperationKind::And, ast_and0, ast_or0);
 
     ld.print_ast_node(ast_and1);
+//    */
 
     //dbg!(ld);
+
+    Ok(())
 }
