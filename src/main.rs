@@ -19,24 +19,25 @@ fn main() -> Result<(), Box<dyn Error>> {
 //    println!("Hello, world!");
 
     let mut node_pool = ld2il::NodePool::new();
-    let x00 = node_pool.new_node(ld2il::NodeKind::Contact, "X00");
-    let x01 = node_pool.new_node(ld2il::NodeKind::Contact, "X01");
-    let x02 = node_pool.new_node(ld2il::NodeKind::Contact, "X02");
-    let x03 = node_pool.new_node(ld2il::NodeKind::Contact, "X03");
-    let x04 = node_pool.new_node(ld2il::NodeKind::Contact, "X04");
-    let x05 = node_pool.new_node(ld2il::NodeKind::Contact, "X05");
-    let x06 = node_pool.new_node(ld2il::NodeKind::Contact, "X06");
-    let x07 = node_pool.new_node(ld2il::NodeKind::Contact, "X07");
-    let x08 = node_pool.new_node(ld2il::NodeKind::Contact, "X08");
-    let x09 = node_pool.new_node(ld2il::NodeKind::Contact, "X09");
-    let x10 = node_pool.new_node(ld2il::NodeKind::Contact, "X10");
-    let x11 = node_pool.new_node(ld2il::NodeKind::Contact, "X11");
-    let x12 = node_pool.new_node(ld2il::NodeKind::Contact, "X12");
-    let x13 = node_pool.new_node(ld2il::NodeKind::Contact, "X13");
-    let y00 = node_pool.new_node(ld2il::NodeKind::Coil, "Y00");
-    let y01 = node_pool.new_node(ld2il::NodeKind::Coil, "Y01");
+    let mut ast_node_pool = ld2il::AstNodePool::new();
+    let x00 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X00")));
+    let x01 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X01")));
+    let x02 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X02")));
+    let x03 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X03")));
+    let x04 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X04")));
+    let x05 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X05")));
+    let x06 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X06")));
+    let x07 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X07")));
+    let x08 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X08")));
+    let x09 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X09")));
+    let x10 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X10")));
+    let x11 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X11")));
+    let x12 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X12")));
+    let x13 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X13")));
+    let y00 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Coil,    "Y00")));
+    let y01 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Coil,    "Y01")));
 
-    let mut ld = Graph::<NodeId, ()>::new();
+    let mut ld = Graph::<AstNodeId, ()>::new();
     let x00_n = ld.add_node(x00);
     let x01_n = ld.add_node(x01);
     let x02_n = ld.add_node(x02);
@@ -75,8 +76,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut bfs = Topo::new(&ld);
     while let Some(nx) = bfs.next(&ld) {
-        let node_id = ld[nx];
-        println!("\n\nNode: {:?}", node_pool.nodes[node_id.id as usize]);
+        let ast_node_id = ld[nx];
+        let ast_node = &ast_node_pool.nodes[ast_node_id.id as usize];
+        println!("\n\nAstNode: {:?}", ast_node);
+
+        if let AstNodeKind::Node(node_id) = ast_node.kind {
+            println!("\tNode: {:?}", node_pool.nodes[node_id.id as usize]);
+        }
 
         for edge in ld.edges_directed(nx, petgraph::Incoming) {
             println!("In Edge: {:?}", edge);
@@ -87,8 +93,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    //Reduce 
 
     //dbg!(ld);
 
     Ok(())
+}
+
+fn reduce_ast(graph: Graph<AstNodeId, ()>) -> Option<Graph<AstNodeId, ()>> {
+    let mut new = Graph::<AstNodeId, ()>::new();
+
+    todo!()
 }

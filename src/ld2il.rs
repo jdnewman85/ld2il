@@ -50,7 +50,7 @@ impl NodePool {
 }
 
 #[derive(Debug, Default, Copy, Clone, Hash, Eq, PartialEq)]
-pub struct AstNodeId { id: Id }
+pub struct AstNodeId { pub id: Id }
 impl From<Id> for AstNodeId {
     fn from(id: Id) -> Self {
         Self { id }

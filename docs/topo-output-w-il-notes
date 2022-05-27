@@ -1,0 +1,111 @@
+Node: Node { id: NodeId { id: 0 }, kind: Contact, label: "X00" }                                              Push X00
+
+Out Edge: EdgeReference { index: EdgeIndex(0), node: [NodeIndex(0), NodeIndex(1)], weight: () }
+
+
+Node: Node { id: NodeId { id: 1 }, kind: Contact, label: "X01" }                                              Push X01
+In Edge: EdgeReference { index: EdgeIndex(0), node: [NodeIndex(0), NodeIndex(1)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(2), node: [NodeIndex(1), NodeIndex(3)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(1), node: [NodeIndex(1), NodeIndex(2)], weight: () }
+                                                                                                              AND
+
+Node: Node { id: NodeId { id: 2 }, kind: Contact, label: "X02" }                                              Push X02
+In Edge: EdgeReference { index: EdgeIndex(1), node: [NodeIndex(1), NodeIndex(2)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(3), node: [NodeIndex(2), NodeIndex(4)], weight: () }
+
+
+Node: Node { id: NodeId { id: 3 }, kind: Contact, label: "X03" }                                              Push X03
+In Edge: EdgeReference { index: EdgeIndex(2), node: [NodeIndex(1), NodeIndex(3)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(4), node: [NodeIndex(3), NodeIndex(4)], weight: () }
+                                                                                                              OR
+													      AND
+Node: Node { id: NodeId { id: 4 }, kind: Contact, label: "X04" }                                              Push X04
+In Edge: EdgeReference { index: EdgeIndex(4), node: [NodeIndex(3), NodeIndex(4)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(3), node: [NodeIndex(2), NodeIndex(4)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(6), node: [NodeIndex(4), NodeIndex(7)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(5), node: [NodeIndex(4), NodeIndex(5)], weight: () }
+                                                                                                              AND
+
+Node: Node { id: NodeId { id: 5 }, kind: Contact, label: "X05" }                                              Push X05
+In Edge: EdgeReference { index: EdgeIndex(5), node: [NodeIndex(4), NodeIndex(5)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(7), node: [NodeIndex(5), NodeIndex(6)], weight: () }
+
+
+Node: Node { id: NodeId { id: 6 }, kind: Contact, label: "X06" }                                              Push X06
+In Edge: EdgeReference { index: EdgeIndex(7), node: [NodeIndex(5), NodeIndex(6)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(13), node: [NodeIndex(6), NodeIndex(11)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(11), node: [NodeIndex(6), NodeIndex(10)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(9), node: [NodeIndex(6), NodeIndex(9)], weight: () }
+                                                                                                              AND
+
+Node: Node { id: NodeId { id: 7 }, kind: Contact, label: "X07" }                                              Push X07
+In Edge: EdgeReference { index: EdgeIndex(6), node: [NodeIndex(4), NodeIndex(7)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(8), node: [NodeIndex(7), NodeIndex(8)], weight: () }
+
+
+Node: Node { id: NodeId { id: 8 }, kind: Contact, label: "X08" }                                              Push X08
+In Edge: EdgeReference { index: EdgeIndex(8), node: [NodeIndex(7), NodeIndex(8)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(14), node: [NodeIndex(8), NodeIndex(11)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(12), node: [NodeIndex(8), NodeIndex(10)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(10), node: [NodeIndex(8), NodeIndex(9)], weight: () }
+                                                                                                              AND
+                                                                                                              OR
+													      AND
+Node: Node { id: NodeId { id: 9 }, kind: Contact, label: "X09" }                                              Push X09
+In Edge: EdgeReference { index: EdgeIndex(10), node: [NodeIndex(8), NodeIndex(9)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(9), node: [NodeIndex(6), NodeIndex(9)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(15), node: [NodeIndex(9), NodeIndex(13)], weight: () }
+
+
+Node: Node { id: NodeId { id: 13 }, kind: Contact, label: "X13" }                                            Push X13
+In Edge: EdgeReference { index: EdgeIndex(15), node: [NodeIndex(9), NodeIndex(13)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(20), node: [NodeIndex(13), NodeIndex(15)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(19), node: [NodeIndex(13), NodeIndex(14)], weight: () }
+                                                                                                             AND
+
+Node: Node { id: NodeId { id: 10 }, kind: Contact, label: "X10" }                                            Push X10
+In Edge: EdgeReference { index: EdgeIndex(12), node: [NodeIndex(8), NodeIndex(10)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(11), node: [NodeIndex(6), NodeIndex(10)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(17), node: [NodeIndex(10), NodeIndex(15)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(16), node: [NodeIndex(10), NodeIndex(14)], weight: () }
+													    OR
+
+Node: Node { id: NodeId { id: 11 }, kind: Contact, label: "X11" }                                           Push X11
+In Edge: EdgeReference { index: EdgeIndex(14), node: [NodeIndex(8), NodeIndex(11)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(13), node: [NodeIndex(6), NodeIndex(11)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(18), node: [NodeIndex(11), NodeIndex(12)], weight: () }
+
+
+Node: Node { id: NodeId { id: 12 }, kind: Contact, label: "X12" }                                           Push X12
+In Edge: EdgeReference { index: EdgeIndex(18), node: [NodeIndex(11), NodeIndex(12)], weight: () }
+
+Out Edge: EdgeReference { index: EdgeIndex(22), node: [NodeIndex(12), NodeIndex(15)], weight: () }
+Out Edge: EdgeReference { index: EdgeIndex(21), node: [NodeIndex(12), NodeIndex(14)], weight: () }
+
+                                                                                                            AND
+													    OR
+													    AND
+													    STORE?
+Node: Node { id: NodeId { id: 14 }, kind: Coil, label: "Y00" }                                              OUT
+In Edge: EdgeReference { index: EdgeIndex(21), node: [NodeIndex(12), NodeIndex(14)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(19), node: [NodeIndex(13), NodeIndex(14)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(16), node: [NodeIndex(10), NodeIndex(14)], weight: () }
+
+
+
+Node: Node { id: NodeId { id: 15 }, kind: Coil, label: "Y01" }                                              OUT
+In Edge: EdgeReference { index: EdgeIndex(22), node: [NodeIndex(12), NodeIndex(15)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(20), node: [NodeIndex(13), NodeIndex(15)], weight: () }
+In Edge: EdgeReference { index: EdgeIndex(17), node: [NodeIndex(10), NodeIndex(15)], weight: () }
