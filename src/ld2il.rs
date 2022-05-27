@@ -1,4 +1,4 @@
-type Id = u32;
+type Id = usize;
 
 #[derive(Debug, Default, Copy, Clone, Hash, Eq, PartialEq)]
 pub struct NodeId { pub id: Id }

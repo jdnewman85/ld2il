@@ -77,11 +77,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut bfs = Topo::new(&ld);
     while let Some(nx) = bfs.next(&ld) {
         let ast_node_id = ld[nx];
-        let ast_node = &ast_node_pool.nodes[ast_node_id.id as usize];
+        let ast_node = &ast_node_pool.nodes[ast_node_id.id];
         println!("\n\nAstNode: {:?}", ast_node);
 
         if let AstNodeKind::Node(node_id) = ast_node.kind {
-            println!("\tNode: {:?}", node_pool.nodes[node_id.id as usize]);
+            println!("\tNode: {:?}", node_pool.nodes[node_id.id]);
         }
 
         for edge in ld.edges_directed(nx, petgraph::Incoming) {
