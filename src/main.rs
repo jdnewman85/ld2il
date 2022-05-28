@@ -72,6 +72,24 @@ fn main() -> Result<(), Box<dyn Error>> {
         (x12_n, y00_n), (x12_n, y01_n),
     ]);
 
+
+    //Reduce 
+    let mut ast_ld = Graph::<AstNodeId, ()>::new();
+
+    //dbg!(ld);
+    let a = ld.remove_node(x00_n).unwrap();
+    let b = ld.remove_node(x01_n).unwrap();
+    let and0 = ast_node_pool.new_node(AstNodeKind::Operation(OperationKind::And));
+    let and0_n = ast_ld.add_node(and0);
+    let ast_and0_n = ast_ld.add_node(and0);
+    let a_n = ast_ld.add_node(a);
+    let b_n = ast_ld.add_node(b);
+    ast_ld.extend_with_edges(&[
+        (a_n, ast_and0_n),
+        (b_n, ast_and0_n),
+    ]);
+    ld.add_edge(and0_n, x03_n, ());
+
     println!("{:?}", Dot::with_config(&ld, &[Config::EdgeNoLabel]));
 
     let mut bfs = Topo::new(&ld);
@@ -93,15 +111,31 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    //Reduce 
+    let mut bfs = Topo::new(&ast_ld);
+    while let Some(nx) = bfs.next(&ast_ld) {
+        let ast_node_id = ast_ld[nx];
+        let ast_node = &ast_node_pool.nodes[ast_node_id.id];
+        println!("\n\nAstNode: {:?}", ast_node);
 
-    //dbg!(ld);
+        if let AstNodeKind::Node(node_id) = ast_node.kind {
+            println!("\tNode: {:?}", node_pool.nodes[node_id.id]);
+        }
 
+        for edge in ast_ld.edges_directed(nx, petgraph::Incoming) {
+            println!("In Edge: {:?}", edge);
+        }
+        println!("");
+        for edge in ast_ld.edges_directed(nx, petgraph::Outgoing) {
+            println!("Out Edge: {:?}", edge);
+        }
+    }
     Ok(())
 }
 
-fn reduce_ast(graph: Graph<AstNodeId, ()>) -> Option<Graph<AstNodeId, ()>> {
-    let mut new = Graph::<AstNodeId, ()>::new();
+fn reduce_ast(mut graph: &Graph<AstNodeId, ()>, ast_node_pool:AstNodePool ) {
+/*
+ * 
+ */
 
     todo!()
 }
