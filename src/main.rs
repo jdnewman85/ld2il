@@ -1,8 +1,6 @@
 
 /*
- * Do I need the ladder object?
- * Could I instead use the underlying collections directly?
- *
+ * Need to copy->convert the ld into ast ladder, before starting to reduce!
  */
 
 
