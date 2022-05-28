@@ -20,24 +20,24 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut node_pool = ld2il::NodePool::new();
     let mut ast_node_pool = ld2il::AstNodePool::new();
-    let x00 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X00")));
-    let x01 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X01")));
-    let x02 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X02")));
-    let x03 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X03")));
-    let x04 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X04")));
-    let x05 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X05")));
-    let x06 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X06")));
-    let x07 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X07")));
-    let x08 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X08")));
-    let x09 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X09")));
-    let x10 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X10")));
-    let x11 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X11")));
-    let x12 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X12")));
-    let x13 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Contact, "X13")));
-    let y00 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Coil,    "Y00")));
-    let y01 = ast_node_pool.new_node(AstNodeKind::Node(node_pool.new_node(ld2il::NodeKind::Coil,    "Y01")));
+    let x00 = node_pool.new_node(ld2il::NodeKind::Contact, "X00");
+    let x01 = node_pool.new_node(ld2il::NodeKind::Contact, "X01");
+    let x02 = node_pool.new_node(ld2il::NodeKind::Contact, "X02");
+    let x03 = node_pool.new_node(ld2il::NodeKind::Contact, "X03");
+    let x04 = node_pool.new_node(ld2il::NodeKind::Contact, "X04");
+    let x05 = node_pool.new_node(ld2il::NodeKind::Contact, "X05");
+    let x06 = node_pool.new_node(ld2il::NodeKind::Contact, "X06");
+    let x07 = node_pool.new_node(ld2il::NodeKind::Contact, "X07");
+    let x08 = node_pool.new_node(ld2il::NodeKind::Contact, "X08");
+    let x09 = node_pool.new_node(ld2il::NodeKind::Contact, "X09");
+    let x10 = node_pool.new_node(ld2il::NodeKind::Contact, "X10");
+    let x11 = node_pool.new_node(ld2il::NodeKind::Contact, "X11");
+    let x12 = node_pool.new_node(ld2il::NodeKind::Contact, "X12");
+    let x13 = node_pool.new_node(ld2il::NodeKind::Contact, "X13");
+    let y00 = node_pool.new_node(ld2il::NodeKind::Coil,    "Y00");
+    let y01 = node_pool.new_node(ld2il::NodeKind::Coil,    "Y01");
 
-    let mut ld = Graph::<AstNodeId, ()>::new();
+    let mut ld = Graph::<NodeId, ()>::new();
     let x00_n = ld.add_node(x00);
     let x01_n = ld.add_node(x01);
     let x02_n = ld.add_node(x02);
@@ -78,7 +78,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     //dbg!(ld);
     let a = ld.remove_node(x00_n).unwrap();
+    let a = ast_node_pool.new_node(AstNodeKind::Node(a));
     let b = ld.remove_node(x01_n).unwrap();
+    let b = ast_node_pool.new_node(AstNodeKind::Node(b));
     let and0 = ast_node_pool.new_node(AstNodeKind::Operation(OperationKind::And));
     let and0_n = ast_ld.add_node(and0);
     let ast_and0_n = ast_ld.add_node(and0);
