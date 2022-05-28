@@ -17,7 +17,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 //    println!("Hello, world!");
 
     let mut node_pool = ld2il::NodePool::new();
-    let mut ast_node_pool = ld2il::AstNodePool::new();
     let x00 = node_pool.new_node(ld2il::NodeKind::Contact, "X00");
     let x01 = node_pool.new_node(ld2il::NodeKind::Contact, "X01");
     let x02 = node_pool.new_node(ld2il::NodeKind::Contact, "X02");
@@ -72,64 +71,79 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 
     //Reduce 
-    let mut ast_ld = Graph::<AstNodeId, ()>::new();
+    let mut ast_node_pool = ld2il::AstNodePool::new();
+    //let mut ast_ld = Graph::<AstNodeId, ()>::new();
+    let mut ast_ld = ld.map(
+        |_, node| {
+            ast_node_pool.new_node(AstNodeKind::Node(*node))
+        },
+        |_, edge| {
+            *edge
+        },
+    );
 
-    //dbg!(ld);
-    let a = ld.remove_node(x00_n).unwrap();
-    let a = ast_node_pool.new_node(AstNodeKind::Node(a));
-    let b = ld.remove_node(x01_n).unwrap();
-    let b = ast_node_pool.new_node(AstNodeKind::Node(b));
+    //dbg!(ast_ld);
+    let a = ast_ld.remove_node(x00_n).unwrap();
+    let b = ast_ld.remove_node(x01_n).unwrap();
     let and0 = ast_node_pool.new_node(AstNodeKind::Operation(OperationKind::And));
     let and0_n = ast_ld.add_node(and0);
-    let ast_and0_n = ast_ld.add_node(and0);
     let a_n = ast_ld.add_node(a);
     let b_n = ast_ld.add_node(b);
     ast_ld.extend_with_edges(&[
-        (a_n, ast_and0_n),
-        (b_n, ast_and0_n),
+        (a_n, and0_n),
+        (b_n, and0_n),
     ]);
     ld.add_edge(and0_n, x03_n, ());
 
     println!("{:?}", Dot::with_config(&ld, &[Config::EdgeNoLabel]));
 
-    let mut bfs = Topo::new(&ld);
-    while let Some(nx) = bfs.next(&ld) {
-        let ast_node_id = ld[nx];
-        let ast_node = &ast_node_pool.nodes[ast_node_id.id];
-        println!("\n\nAstNode: {:?}", ast_node);
+    topo_print_node_map(&ld);
+    topo_print_ast_node_map(&ast_node_pool, &ast_ld);
 
-        if let AstNodeKind::Node(node_id) = ast_node.kind {
-            println!("\tNode: {:?}", node_pool.nodes[node_id.id]);
-        }
-
-        for edge in ld.edges_directed(nx, petgraph::Incoming) {
-            println!("In Edge: {:?}", edge);
-        }
-        println!("");
-        for edge in ld.edges_directed(nx, petgraph::Outgoing) {
-            println!("Out Edge: {:?}", edge);
-        }
-    }
-
-    let mut bfs = Topo::new(&ast_ld);
-    while let Some(nx) = bfs.next(&ast_ld) {
-        let ast_node_id = ast_ld[nx];
-        let ast_node = &ast_node_pool.nodes[ast_node_id.id];
-        println!("\n\nAstNode: {:?}", ast_node);
-
-        if let AstNodeKind::Node(node_id) = ast_node.kind {
-            println!("\tNode: {:?}", node_pool.nodes[node_id.id]);
-        }
-
-        for edge in ast_ld.edges_directed(nx, petgraph::Incoming) {
-            println!("In Edge: {:?}", edge);
-        }
-        println!("");
-        for edge in ast_ld.edges_directed(nx, petgraph::Outgoing) {
-            println!("Out Edge: {:?}", edge);
-        }
-    }
     Ok(())
+}
+
+//TODO Generalize over nodes?
+fn topo_print_node_map<N>(graph: &Graph<N, ()>) 
+where N: std::fmt::Debug + Copy
+{
+    println!("topo_print_node_map--------------------------------");
+
+    let mut bfs = Topo::new(graph);
+    while let Some(nx) = bfs.next(graph) {
+        let node_id = graph[nx];
+        println!("\n\nNode Id: {:?}", node_id);
+
+        for edge in graph.edges_directed(nx, petgraph::Incoming) {
+            println!("In Edge: {:?}", edge);
+        }
+        println!("");
+        for edge in graph.edges_directed(nx, petgraph::Outgoing) {
+            println!("Out Edge: {:?}", edge);
+        }
+    }
+}
+fn topo_print_ast_node_map(node_pool: &AstNodePool, graph: &Graph<AstNodeId, ()>) {
+    println!("topo_print_ast_node_map--------------------------------");
+
+    let mut bfs = Topo::new(graph);
+    while let Some(nx) = bfs.next(graph) {
+        let ast_node_id = graph[nx];
+        let ast_node = &node_pool.nodes[ast_node_id.id];
+        println!("\n\nAstNode: {:?}", ast_node);
+
+        if let AstNodeKind::Node(node_id) = ast_node.kind {
+            println!("\tNode: {:?}", node_pool.nodes[node_id.id]);
+        }
+
+        for edge in graph.edges_directed(nx, petgraph::Incoming) {
+            println!("In Edge: {:?}", edge);
+        }
+        println!("");
+        for edge in graph.edges_directed(nx, petgraph::Outgoing) {
+            println!("Out Edge: {:?}", edge);
+        }
+    }
 }
 
 fn reduce_ast(mut graph: &Graph<AstNodeId, ()>, ast_node_pool:AstNodePool ) {
