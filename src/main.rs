@@ -89,6 +89,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     reduce_into_and(&mut ast_ld, x05_n, x06_n, &mut ast_node_pool);
     reduce_into_or (&mut ast_ld, x02_n, x03_n, &mut ast_node_pool);
 
+    //Filter out leaf nodes for ast structure only
+    let _ast_ld = ast_ld.filter_map(
+        |_, node| {
+            let n = &ast_node_pool.nodes[node.id];
+            match n.kind {
+                AstNodeKind::Node(_node_id) => {
+                    None
+                },
+                AstNodeKind::Operation(_op_kind) => {
+                    Some(node)
+                },
+            }
+        },
+        |_, edge| {
+            Some(edge)
+        }
+    );
+
     //dbg!(ast_ld);
     //TODO factor out into function
 
