@@ -3,13 +3,14 @@
  * Need to copy->convert the ld into ast ladder, before starting to reduce!
  */
 
-
 pub mod ld2il;
 pub use crate::ld2il::*;
+pub mod util;
+pub use crate::util::*;
 
 use petgraph::graph::Graph;
 use petgraph::dot::{Dot, Config};
-use petgraph::visit::Topo;
+use petgraph::graph::NodeIndex;
 
 use std::error::Error;
 
@@ -70,7 +71,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     ]);
 
 
-    //Reduce 
+    // Convert
     let mut ast_node_pool = ld2il::AstNodePool::new();
     //let mut ast_ld = Graph::<AstNodeId, ()>::new();
     let mut ast_ld = ld.map(
@@ -82,74 +83,62 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     );
 
+    // Reduce
+    reduce_into_and(&mut ast_ld, x00_n, x01_n, &mut ast_node_pool);
+    reduce_into_and(&mut ast_ld, x05_n, x06_n, &mut ast_node_pool);
+
     //dbg!(ast_ld);
-    let a = ast_ld.remove_node(x00_n).unwrap();
-    let b = ast_ld.remove_node(x01_n).unwrap();
-    let and0 = ast_node_pool.new_node(AstNodeKind::Operation(OperationKind::And));
-    let and0_n = ast_ld.add_node(and0);
-    let a_n = ast_ld.add_node(a);
-    let b_n = ast_ld.add_node(b);
-    ast_ld.extend_with_edges(&[
-        (a_n, and0_n),
-        (b_n, and0_n),
-    ]);
-    ld.add_edge(and0_n, x03_n, ());
+    //TODO factor out into function
 
-    println!("{:?}", Dot::with_config(&ld, &[Config::EdgeNoLabel]));
+    //println!("{:?}", Dot::with_config(&ld, &[Config::EdgeNoLabel]));
+    println!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel]));
 
-    topo_print_node_map(&ld);
-    topo_print_ast_node_map(&ast_node_pool, &ast_ld);
+//    topo_print_node_map(&ld);
+//    topo_print_ast_node_map(&ast_node_pool, &ast_ld);
 
     Ok(())
 }
 
-//TODO Generalize over nodes?
-fn topo_print_node_map<N>(graph: &Graph<N, ()>) 
-where N: std::fmt::Debug + Copy
-{
-    println!("topo_print_node_map--------------------------------");
+fn reduce_into_and(graph: &mut Graph<AstNodeId, ()>, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
+    //TODO Return and node?
+    //TODO Return Result<>
 
-    let mut bfs = Topo::new(graph);
-    while let Some(nx) = bfs.next(graph) {
-        let node_id = graph[nx];
-        println!("\n\nNode Id: {:?}", node_id);
+    // Ensure Node1 sinks are only connected to node2 source
+    //   Single sink/source, and edges_connecting also single
 
-        for edge in graph.edges_directed(nx, petgraph::Incoming) {
-            println!("In Edge: {:?}", edge);
-        }
-        println!("");
-        for edge in graph.edges_directed(nx, petgraph::Outgoing) {
-            println!("Out Edge: {:?}", edge);
-        }
+    // Store sources from lh_node, and sinks from rh_node
+    let lh_sources: Vec<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Incoming).collect();
+    let rh_sinks: Vec<NodeIndex>   = graph.neighbors_directed(rh_node, petgraph::Outgoing).collect();
+
+    // Remove nodes and store weights
+    let lh_weight = graph.remove_node(lh_node).unwrap();
+    let rh_weight = graph.remove_node(rh_node).unwrap();
+
+    // Create AND node
+    let and0 = node_pool.new_node(AstNodeKind::Operation(OperationKind::And));
+    let and0_n = graph.add_node(and0);
+    // Create new nodes for lh, an rh
+    let new_lh_node = graph.add_node(lh_weight);
+    let new_rh_node = graph.add_node(rh_weight);
+
+    // Connect lh and rh nodes to new AND node
+    graph.extend_with_edges(&[
+        (new_lh_node, and0_n),
+        (new_rh_node, and0_n),
+    ]);
+
+    //Reconnect edges based on what existed prior
+    for src_node in lh_sources {
+        graph.add_edge(src_node, and0_n, ());
     }
-}
-fn topo_print_ast_node_map(node_pool: &AstNodePool, graph: &Graph<AstNodeId, ()>) {
-    println!("topo_print_ast_node_map--------------------------------");
-
-    let mut bfs = Topo::new(graph);
-    while let Some(nx) = bfs.next(graph) {
-        let ast_node_id = graph[nx];
-        let ast_node = &node_pool.nodes[ast_node_id.id];
-        println!("\n\nAstNode: {:?}", ast_node);
-
-        if let AstNodeKind::Node(node_id) = ast_node.kind {
-            println!("\tNode: {:?}", node_pool.nodes[node_id.id]);
-        }
-
-        for edge in graph.edges_directed(nx, petgraph::Incoming) {
-            println!("In Edge: {:?}", edge);
-        }
-        println!("");
-        for edge in graph.edges_directed(nx, petgraph::Outgoing) {
-            println!("Out Edge: {:?}", edge);
-        }
+    for sink_node in rh_sinks {
+        graph.add_edge(and0_n, sink_node, ());
     }
 }
 
-fn reduce_ast(mut graph: &Graph<AstNodeId, ()>, ast_node_pool:AstNodePool ) {
 /*
- * 
- */
+fn reduce_ast(mut graph: &Graph<AstNodeId, ()>, ast_node_pool:AstNodePool ) {
 
     todo!()
 }
+ */
