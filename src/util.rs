@@ -48,3 +48,24 @@ fn topo_print_ast_node_map(node_pool: &AstNodePool, graph: &Graph<AstNodeId, ()>
         }
     }
 }
+
+#[allow(unused)]
+pub fn filter_leaf_nodes(graph: &Graph<AstNodeId, ()>, node_pool: &AstNodePool) -> Graph<AstNodeId, ()> {
+    //Filter out leaf nodes for ast structure only
+    graph.filter_map(
+        |_, node| {
+            let n = &node_pool.nodes[node.id];
+            match n.kind {
+                AstNodeKind::Node(_node_id) => {
+                    None
+                },
+                AstNodeKind::Operation(_op_kind) => {
+                    Some(*node)
+                },
+            }
+        },
+        |_, edge| {
+            Some(*edge)
+        }
+    )
+}
