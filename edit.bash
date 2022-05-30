@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
-sources=$(find "./src" -type f -name "*.rs")
+main_source=$(fd 'main.rs' 'src')
+sources=$(fd '.rs' --exclude 'main.rs' 'src')
 
-$EDITOR ${sources}
+$EDITOR ${main_source} ${sources}
