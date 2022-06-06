@@ -25,7 +25,7 @@ where S: Into<String> + Clone
         stdin.write_all(dot.into().as_bytes()).unwrap();
     }
     cmd.wait();
-    println!("Finished");
+    //println!("Finished");
 }
 
 // TODO Generalize over nodes?

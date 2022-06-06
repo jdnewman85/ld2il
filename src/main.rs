@@ -104,15 +104,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     reduce_into_or (&mut ast_ld, x02_n, x03_n, &mut ast_node_pool);
 */
 
+
     write_dot_to_png(
         "0.png",
-        &format!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel])),
+        &format!("{:?}", Dot::new(&ast_ld)),
+//      &format!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel])),
     );
     // TODO Will probably need a StableGraph to be able to safely bulk modify the graph
-//    println!("REDUCE");
-    reduce(&mut ast_ld, &mut ast_node_pool);
-//    println!("REDUCE");
-    reduce(&mut ast_ld, &mut ast_node_pool);
+//  println!("REDUCE");
+    while reduce(&mut ast_ld, &mut ast_node_pool) {}
 
     // Leaf node filter test
 //  let ast_ld = filter_leaf_nodes(&ast_ld, &ast_node_pool);

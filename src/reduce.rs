@@ -15,7 +15,17 @@ use std::collections::HashSet;
 pub fn nodes_could_and(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex) -> bool {
 //  let lh_sources: Vec<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Incoming).collect();
     let lh_sinks:   Vec<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Outgoing).collect();
-    let rh_sources: Vec<NodeIndex> = graph.neighbors_directed(rh_node, petgraph::Incoming).collect();
+//  let rh_sources: Vec<NodeIndex> = graph.neighbors_directed(rh_node, petgraph::Incoming).collect();
+    let rh_sources: Vec<_> = graph.edges_directed(rh_node, petgraph::Incoming)
+    .filter(|edge_ref| {
+        match edge_ref.weight() {
+            EdgeKind::Edge => true,
+            EdgeKind::Operands => false,
+        }
+    })
+    .map(|edge_ref| {
+        edge_ref.source()
+    }).collect();
 //  let rh_sinks:   Vec<NodeIndex> = graph.neighbors_directed(rh_node, petgraph::Outgoing).collect();
 
 //  dbg!(&lh_sources, &lh_sinks, &rh_sources, &rh_sinks);
@@ -26,6 +36,38 @@ pub fn nodes_could_and(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIn
         }
     }
 
+    //TODO TEMP
+    let lh_node_id = graph[lh_node];
+    let rh_node_id = graph[rh_node];
+    if lh_node_id.id == 16 as usize || lh_node_id.id as usize == 18 && rh_node_id.id as usize == 16 || rh_node_id.id as usize == 18 {
+        println!("Can't AND {:?} with {:?}", lh_node_id, rh_node_id);
+        println!("lh.len() - {} | rh.len() - {}", lh_sinks.len(), rh_sources.len());
+
+        let temp: Vec<_> = graph.edges_directed(rh_node, petgraph::Incoming)
+        /*
+        .filter(|edge_ref| {
+            match edge_ref.weight() {
+                EdgeKind::Edge => true,
+                EdgeKind::Operands => false,
+            }
+        })
+        */
+        .map(|edge_ref| {
+            graph[edge_ref.source()]
+        }).collect();
+        let temp2: Vec<_> = graph.edges_directed(rh_node, petgraph::Incoming)
+        /*
+        .filter(|edge_ref| {
+            match edge_ref.weight() {
+                EdgeKind::Edge => true,
+                EdgeKind::Operands => false,
+            }
+        })
+        */
+        .collect();
+ 
+        dbg!(temp, temp2);
+    }
     return false
 }
 
@@ -47,6 +89,10 @@ pub fn nodes_could_or(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeInd
         }
     }
 
+    //TODO TEMP
+    let lh_node_id = graph[lh_node];
+    let rh_node_id = graph[rh_node];
+    println!("Can't OR {:?} with {:?}", lh_node_id, rh_node_id);
     return false
 }
 
@@ -153,7 +199,8 @@ pub fn reduce_into_and(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: No
 
     write_dot_to_png(
         &format!("{:?} {:?}-{:?}_and.png", and0.id, lh_ast_node.id, rh_ast_node.id),
-        &format!("{:?}", Dot::with_config(&*graph, &[Config::EdgeNoLabel])),
+        &format!("{:?}", Dot::new(&*graph)),
+//      &format!("{:?}", Dot::with_config(&*graph, &[Config::EdgeNoLabel])),
     );
 }
 
@@ -259,7 +306,8 @@ pub fn reduce_into_or(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: Nod
 
     write_dot_to_png(
         &format!("{:?} {:?}-{:?}_or.png", or0.id, lh_ast_node.id, rh_ast_node.id),
-        &format!("{:?}", Dot::with_config(&*graph, &[Config::EdgeNoLabel])),
+        &format!("{:?}", Dot::new(&*graph)),
+//      &format!("{:?}", Dot::with_config(&*graph, &[Config::EdgeNoLabel])),
     );
 }
 
@@ -314,7 +362,7 @@ pub fn reduce_into_or_older(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_nod
     );
 }
 
-pub fn reduce(mut graph: &mut StableGraph<AstNodeId, EdgeKind>, mut node_pool: &mut AstNodePool) {
+pub fn reduce(mut graph: &mut StableGraph<AstNodeId, EdgeKind>, mut node_pool: &mut AstNodePool) -> bool {
     // TODO Walk graph,
     //   create list of operations to be created
     //   do operations to current graph
@@ -347,6 +395,7 @@ pub fn reduce(mut graph: &mut StableGraph<AstNodeId, EdgeKind>, mut node_pool: &
             if lh_node != sibling {
                 if nodes_could_or(&graph, lh_node, sibling) {
                     reduce_into_or(&mut graph, lh_node, sibling, &mut node_pool);
+                    return true//TODO TEMP
                 }
             }
         }
@@ -366,10 +415,12 @@ pub fn reduce(mut graph: &mut StableGraph<AstNodeId, EdgeKind>, mut node_pool: &
             if lh_node != child {
                 if nodes_could_and(&graph, lh_node, child) {
                     reduce_into_and(&mut graph, lh_node, child, &mut node_pool);
+                    return true//TODO TEMP
                 }
             }
         }
-
     }
+
+    false
 }
 
