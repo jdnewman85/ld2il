@@ -31,12 +31,13 @@ where S: Into<String> + Clone
 
 // TODO Generalize over nodes?
 #[allow(unused)]
-pub fn print_il_test<N>(graph: &StableGraph<N, EdgeKind>, starting_output: NodeIndex)
+pub fn print_il_test<N>(graph: &StableGraph<N, EdgeKind>, starting_output: NodeIndex, s2: NodeIndex)
 where N: std::fmt::Debug + Clone
 {
     println!("topo_print_il_test--------------------------------");
 
     let mut visitor = DfsPostOrder::new(graph, starting_output);
+    visitor.stack.push(s2);
     while let Some(nx) = visitor.next(graph) {
         let node = graph[nx].clone();
         println!("{:?}", node);

@@ -155,7 +155,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut pretty = pretty.clone();
     pretty.reverse();
 
-    print_il_test(&pretty.into(), y00_n);
+    print_il_test(&pretty.into(), y00_n, y01_n);
 
     Ok(())
 }
