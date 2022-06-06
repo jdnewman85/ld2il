@@ -13,9 +13,9 @@ pub use crate::util::*;
 pub mod reduce;
 pub use crate::reduce::*;
 
+use petgraph::dot::Dot;
 use petgraph::graph::Graph;
 use petgraph::stable_graph::StableGraph;
-use petgraph::dot::{Dot, Config};
 
 use std::error::Error;
 
@@ -108,7 +108,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     write_dot_to_png(
         "0.png",
         &format!("{:?}", Dot::new(&ast_ld)),
-//      &format!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel])),
     );
     // TODO Will probably need a StableGraph to be able to safely bulk modify the graph
 //  println!("REDUCE");
@@ -131,6 +130,21 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 //  topo_print_node_map(&ld);
 //  topo_print_ast_node_map(&ast_node_pool, &ast_ld);
+
+    let pretty = ast_ld.map(| _, &ast_node_id| {
+        let node_kind = ast_node_pool.nodes[ast_node_id.id].kind;
+        match node_kind {
+            AstNodeKind::Node(node_id) => node_pool.nodes[node_id.id].label.clone(),
+            AstNodeKind::Operation(op_kind) => format!("{:?}", op_kind),
+        }
+    },
+    |_, &edge_id| {
+        edge_id
+    });
+    write_dot_to_png(
+        "pretty_end.png",
+        &format!("{:?}", Dot::new(&pretty)),
+    );
 
     Ok(())
 }
