@@ -1,6 +1,9 @@
+#![feature(drain_filter)]
 
 /*
- * Need to copy->convert the ld into ast ladder, before starting to reduce!
+ * PROBLEM: I think processing ands is happening in the wrong order
+ *   a & b & (c || d) & e is getting turned into: ((a & b) & ((c || d) & e)) instead of
+ *                                                (((a & b) & (c || d)) & e)
  */
 
 pub mod ld2il;
@@ -11,12 +14,20 @@ pub mod reduce;
 pub use crate::reduce::*;
 
 use petgraph::graph::Graph;
+use petgraph::stable_graph::StableGraph;
 use petgraph::dot::{Dot, Config};
 
 use std::error::Error;
 
+#[derive(Debug, Default, Copy, Clone, Hash, Eq, PartialEq)]
+pub enum EdgeKind {
+    #[default]
+    Edge,
+    Operands,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
-//    println!("Hello, world!");
+//  println!("Hello, world!");
 
     let mut node_pool = ld2il::NodePool::new();
     let x00 = node_pool.new_node(ld2il::NodeKind::Contact, "X00");
@@ -36,7 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let y00 = node_pool.new_node(ld2il::NodeKind::Coil,    "Y00");
     let y01 = node_pool.new_node(ld2il::NodeKind::Coil,    "Y01");
 
-    let mut ld = Graph::<NodeId, ()>::new();
+    let mut ld = Graph::<NodeId, EdgeKind>::new();
     let x00_n = ld.add_node(x00);
     let x01_n = ld.add_node(x01);
     let x02_n = ld.add_node(x02);
@@ -74,8 +85,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Convert
     let mut ast_node_pool = ld2il::AstNodePool::new();
-    //let mut ast_ld = Graph::<AstNodeId, ()>::new();
-    let mut ast_ld = ld.map(
+//  let mut ast_ld = Graph::<AstNodeId, ()>::new();
+    let ast_ld = ld.map(
         |_, node| {
             ast_node_pool.new_node(AstNodeKind::Node(*node))
         },
@@ -84,21 +95,42 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     );
 
+    let mut ast_ld: StableGraph<AstNodeId, EdgeKind> = ast_ld.into();
+
     // Reduce
+/*
     reduce_into_and(&mut ast_ld, x00_n, x01_n, &mut ast_node_pool);
     reduce_into_and(&mut ast_ld, x05_n, x06_n, &mut ast_node_pool);
     reduce_into_or (&mut ast_ld, x02_n, x03_n, &mut ast_node_pool);
+*/
 
-    //Leaf node filter test
-    //let ast_ld = filter_leaf_nodes(&ast_ld, &ast_node_pool);
+    write_dot_to_png(
+        "0.png",
+        &format!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel])),
+    );
+    // TODO Will probably need a StableGraph to be able to safely bulk modify the graph
+//    println!("REDUCE");
+    reduce(&mut ast_ld, &mut ast_node_pool);
+//    println!("REDUCE");
+    reduce(&mut ast_ld, &mut ast_node_pool);
 
-    //dbg!(ast_ld);
+    // Leaf node filter test
+//  let ast_ld = filter_leaf_nodes(&ast_ld, &ast_node_pool);
+//
+//  dbg!(ast_ld);
+//
+//  println!("{:?}", Dot::with_config(&ld, &[Config::EdgeNoLabel]));
+//  println!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel]));
+/*
+    write_dot_to_png(
+        "test_more.png",
+        &format!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel])),
+    );
+*/
 
-    //println!("{:?}", Dot::with_config(&ld, &[Config::EdgeNoLabel]));
-    println!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel]));
 
-//    topo_print_node_map(&ld);
-//    topo_print_ast_node_map(&ast_node_pool, &ast_ld);
+//  topo_print_node_map(&ld);
+//  topo_print_ast_node_map(&ast_node_pool, &ast_ld);
 
     Ok(())
 }
