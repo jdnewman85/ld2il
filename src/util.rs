@@ -1,7 +1,8 @@
 use crate::EdgeKind;
 pub use crate::ld2il::*;
 
-use petgraph::graph::Graph;
+use petgraph::{graph::Graph, visit::DfsPostOrder};
+use petgraph::stable_graph::{StableGraph, NodeIndex};
 use petgraph::visit::Topo;
 
 use std::{process::{Command, Stdio}, io::Write, path::Path};
@@ -29,6 +30,19 @@ where S: Into<String> + Clone
 }
 
 // TODO Generalize over nodes?
+#[allow(unused)]
+pub fn print_il_test<N>(graph: &StableGraph<N, EdgeKind>, starting_output: NodeIndex)
+where N: std::fmt::Debug + Clone
+{
+    println!("topo_print_il_test--------------------------------");
+
+    let mut visitor = DfsPostOrder::new(graph, starting_output);
+    while let Some(nx) = visitor.next(graph) {
+        let node = graph[nx].clone();
+        println!("{:?}", node);
+    }
+}
+
 #[allow(unused)]
 pub fn topo_print_node_map<N>(graph: &Graph<N, EdgeKind>)
 where N: std::fmt::Debug + Copy
