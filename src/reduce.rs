@@ -7,12 +7,14 @@ use petgraph::stable_graph::NodeIndex;
 use petgraph::stable_graph::StableGraph;
 use petgraph::visit::EdgeRef;
 use petgraph::visit::Topo;
-use petgraph::dot::{Dot, Config};
+use petgraph::dot::Dot;
 
 use std::collections::HashSet;
 
+type LdAstGraph = StableGraph<AstNodeId, EdgeKind>;
+
 #[allow(unused)]
-pub fn nodes_could_and(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex) -> bool {
+pub fn nodes_could_and(graph: &LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex) -> bool {
 //  let lh_sources: Vec<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Incoming).collect();
     let lh_sinks:   Vec<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Outgoing).collect();
 //  let rh_sources: Vec<NodeIndex> = graph.neighbors_directed(rh_node, petgraph::Incoming).collect();
@@ -72,7 +74,7 @@ pub fn nodes_could_and(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIn
 }
 
 #[allow(unused)]
-pub fn nodes_could_or(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex) -> bool {
+pub fn nodes_could_or(graph: &LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex) -> bool {
     let lh_sources: HashSet<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Incoming).collect();
     let lh_sinks:   HashSet<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Outgoing).collect();
     let rh_sources: HashSet<NodeIndex> = graph.neighbors_directed(rh_node, petgraph::Incoming).collect();
@@ -99,7 +101,7 @@ pub fn nodes_could_or(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeInd
 
 // TODO Generalize this and the or?
 #[allow(unused)]
-pub fn reduce_into_and(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
+pub fn reduce_into_and(graph: &mut LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
     // TODO Return and node?
     // TODO Return Result<>
 
@@ -207,7 +209,7 @@ pub fn reduce_into_and(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: No
 }
 
 #[allow(unused)]
-pub fn reduce_into_or(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
+pub fn reduce_into_or(graph: &mut LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
     // TODO Return and node?
     // TODO Return Result<>
 
@@ -315,7 +317,7 @@ pub fn reduce_into_or(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: Nod
 }
 
 #[allow(unused)]
-pub fn reduce(mut graph: &mut StableGraph<AstNodeId, EdgeKind>, mut node_pool: &mut AstNodePool) -> bool {
+pub fn reduce(mut graph: &mut LdAstGraph, mut node_pool: &mut AstNodePool) -> bool {
     // TODO Walk graph,
     //   create list of operations to be created
     //   do operations to current graph
