@@ -13,7 +13,7 @@ where S: Into<String> + Clone
 {
     let file_string: String = filename.into();
     let out_path = Path::new("./dot/").join(&file_string);
-    println!("Writing dot {:?}", &out_path);
+//  println!("Writing dot {:?}", &out_path);
     let mut cmd = Command::new("dot")
         .args(["-T", "png", "-o", &out_path.to_str().unwrap()])
         .stdin(Stdio::piped())
@@ -93,19 +93,19 @@ pub fn topo_print_ast_node_map(node_pool: &AstNodePool, graph: &Graph<AstNodeId,
 pub fn filter_leaf_nodes(graph: &Graph<AstNodeId, EdgeKind>, node_pool: &AstNodePool) -> Graph<AstNodeId, EdgeKind> {
     // Filter out leaf nodes for ast structure only
     graph.filter_map(
-        |_, node| {
+        |_, &node| {
             let n = &node_pool.nodes[node.id];
             match n.kind {
                 AstNodeKind::Node(_node_id) => {
                     None
                 },
                 AstNodeKind::Operation(_op_kind) => {
-                    Some(*node)
+                    Some(node)
                 },
             }
         },
-        |_, edge| {
-            Some(*edge)
+        |_, &edge| {
+            Some(edge)
         }
     )
 }

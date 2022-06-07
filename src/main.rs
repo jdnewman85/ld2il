@@ -9,7 +9,6 @@ pub use crate::reduce::*;
 
 use petgraph::dot::Dot;
 use petgraph::graph::Graph;
-use petgraph::stable_graph::StableGraph;
 
 use std::error::Error;
 
@@ -21,8 +20,6 @@ pub enum EdgeKind {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-//  println!("Hello, world!");
-
     let mut node_pool = ld2il::NodePool::new();
     let x00 = node_pool.new_node(ld2il::NodeKind::Contact, "X00");
     let x01 = node_pool.new_node(ld2il::NodeKind::Contact, "X01");
@@ -79,51 +76,22 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Convert
     let mut ast_node_pool = ld2il::AstNodePool::new();
-//  let mut ast_ld = Graph::<AstNodeId, ()>::new();
     let ast_ld = ld.map(
-        |_, node| {
-            ast_node_pool.new_node(AstNodeKind::Node(*node))
+        |_, &node| {
+            ast_node_pool.new_node(AstNodeKind::Node(node))
         },
-        |_, edge| {
-            *edge
+        |_, &edge| {
+            edge
         },
     );
 
-    let mut ast_ld: StableGraph<AstNodeId, EdgeKind> = ast_ld.into();
-
-    // Reduce
-/*
-    reduce_into_and(&mut ast_ld, x00_n, x01_n, &mut ast_node_pool);
-    reduce_into_and(&mut ast_ld, x05_n, x06_n, &mut ast_node_pool);
-    reduce_into_or (&mut ast_ld, x02_n, x03_n, &mut ast_node_pool);
-*/
-
+    let mut ast_ld: LdAstGraph = ast_ld.into();
 
     write_dot_to_png(
         "0.png",
         &format!("{:?}", Dot::new(&ast_ld)),
     );
-    // TODO Will probably need a StableGraph to be able to safely bulk modify the graph
-//  println!("REDUCE");
     while reduce(&mut ast_ld, &mut ast_node_pool) {}
-
-    // Leaf node filter test
-//  let ast_ld = filter_leaf_nodes(&ast_ld, &ast_node_pool);
-//
-//  dbg!(ast_ld);
-//
-//  println!("{:?}", Dot::with_config(&ld, &[Config::EdgeNoLabel]));
-//  println!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel]));
-/*
-    write_dot_to_png(
-        "test_more.png",
-        &format!("{:?}", Dot::with_config(&ast_ld, &[Config::EdgeNoLabel])),
-    );
-*/
-
-
-//  topo_print_node_map(&ld);
-//  topo_print_ast_node_map(&ast_node_pool, &ast_ld);
 
     let pretty = ast_ld.map(| _, &ast_node_id| {
         let node_kind = ast_node_pool.nodes[ast_node_id.id].kind;

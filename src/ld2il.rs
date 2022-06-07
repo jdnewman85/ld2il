@@ -2,13 +2,6 @@ type Id = usize;
 
 #[derive(Debug, Default, Copy, Clone, Hash, Eq, PartialEq)]
 pub struct NodeId { pub id: Id }
-/* TODO evaluate
-impl From<Id> for NodeId {
-    fn from(id: Id) -> Self {
-        Self { id }
-    }
-}
-*/
 
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 pub enum NodeKind {
@@ -53,18 +46,6 @@ impl NodePool {
 
 #[derive(Debug, Default, Copy, Clone, Hash, Eq, PartialEq)]
 pub struct AstNodeId { pub id: Id }
-/* TODO evaluate
-impl From<Id> for AstNodeId {
-    fn from(id: Id) -> Self {
-        Self { id }
-    }
-}
-impl From<NodeId> for AstNodeId {
-    fn from(id: NodeId) -> Self {
-        Self { id: id.id }
-    }
-}
-*/
 
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 pub enum OperationKind {
