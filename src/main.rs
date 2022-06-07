@@ -1,15 +1,5 @@
 #![feature(drain_filter)]
 
-/*
- * PROBLEM: I think processing ands is happening in the wrong order
- *   a & b & (c || d) & e is getting turned into: ((a & b) & ((c || d) & e)) instead of
- *                                                (((a & b) & (c || d)) & e)
- *
- * I wonder if order of and/or should be based on some sort of Order of Operations?
- *
- * What should be done to rebuild ladders with positional stability among builds?
- */
-
 pub mod ld2il;
 pub use crate::ld2il::*;
 pub mod util;

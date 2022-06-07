@@ -11,7 +11,7 @@ use petgraph::dot::{Dot, Config};
 
 use std::collections::HashSet;
 
-
+#[allow(unused)]
 pub fn nodes_could_and(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex) -> bool {
 //  let lh_sources: Vec<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Incoming).collect();
     let lh_sinks:   Vec<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Outgoing).collect();
@@ -71,6 +71,7 @@ pub fn nodes_could_and(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIn
     return false
 }
 
+#[allow(unused)]
 pub fn nodes_could_or(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex) -> bool {
     let lh_sources: HashSet<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Incoming).collect();
     let lh_sinks:   HashSet<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Outgoing).collect();
@@ -97,6 +98,7 @@ pub fn nodes_could_or(graph: &StableGraph<AstNodeId, EdgeKind>, lh_node: NodeInd
 }
 
 // TODO Generalize this and the or?
+#[allow(unused)]
 pub fn reduce_into_and(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
     // TODO Return and node?
     // TODO Return Result<>
@@ -204,6 +206,7 @@ pub fn reduce_into_and(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: No
     );
 }
 
+#[allow(unused)]
 pub fn reduce_into_or(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
     // TODO Return and node?
     // TODO Return Result<>
@@ -311,57 +314,7 @@ pub fn reduce_into_or(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: Nod
     );
 }
 
-pub fn reduce_into_or_older(graph: &mut StableGraph<AstNodeId, EdgeKind>, lh_node: NodeIndex, rh_node: NodeIndex, node_pool: &mut AstNodePool) {
-    // TODO Return and node?
-    // TODO Return Result<>
-
-    // TODO Ensure node sinks and sources match exactly
-    if !nodes_could_or(&graph, lh_node, rh_node) {
-        panic!("But you can't OR those!");
-    }
-
-    let lh_node_id = graph[lh_node];
-    let lh_ast_node = &node_pool.nodes[lh_node_id.id].clone();
-    let rh_node_id = graph[rh_node];
-    let rh_ast_node = &node_pool.nodes[rh_node_id.id].clone();
-    println!("Creating OR - {:?} -> {:?}", lh_node_id, rh_node_id);
-//  println!("Creating OR - {:?} -> {:?}", lh_ast_node, rh_ast_node);
-
-    // Store sources from lh_node, and sinks from rh_node
-    let lh_sources: HashSet<NodeIndex> = graph.neighbors_directed(lh_node, petgraph::Incoming).collect();
-    let rh_sinks:   HashSet<NodeIndex> = graph.neighbors_directed(rh_node, petgraph::Outgoing).collect();
-
-    // Remove nodes and store weights
-    let lh_weight = graph.remove_node(lh_node).unwrap();
-    let rh_weight = graph.remove_node(rh_node).unwrap();
-
-    // Create OR node
-    let or0 = node_pool.new_node(AstNodeKind::Operation(OperationKind::Or));
-    let or0_n = graph.add_node(or0);
-    // Create new nodes for lh, an rh
-    let new_lh_node = graph.add_node(lh_weight);
-    let new_rh_node = graph.add_node(rh_weight);
-
-    // Connect lh and rh nodes to new AND node
-    graph.extend_with_edges(&[
-        (new_lh_node, or0_n),
-        (new_rh_node, or0_n),
-    ]);
-
-    // Reconnect edges based on what existed prior
-    for src_node in lh_sources {
-        graph.add_edge(src_node, or0_n, EdgeKind::Edge);
-    }
-    for sink_node in rh_sinks {
-        graph.add_edge(or0_n, sink_node, EdgeKind::Edge);
-    }
-
-    write_dot_to_png(
-        &format!("OR{:?} & {:?} -> {:?}.png", lh_ast_node.id, rh_ast_node.id, or0.id),
-        &format!("{:?}", Dot::with_config(&*graph, &[Config::EdgeNoLabel])),
-    );
-}
-
+#[allow(unused)]
 pub fn reduce(mut graph: &mut StableGraph<AstNodeId, EdgeKind>, mut node_pool: &mut AstNodePool) -> bool {
     // TODO Walk graph,
     //   create list of operations to be created
