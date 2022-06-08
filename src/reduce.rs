@@ -56,17 +56,18 @@ pub fn nodes_could_or(graph: &LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex
 
     return false
 }
-
-// TODO Generalize this and the or?
 #[allow(unused)]
-pub fn reduce_into_and(graph: &mut LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex) {
+pub fn reduce_into_operation(graph: &mut LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex, op_kind: OperationKind) {
     // TODO Return new resulting node?
     // TODO Return Result<>
 
     // Single sink/source, and edges_connecting also single
+//  TODO Replace with check passed in?
+/*
     if !nodes_could_and(&graph, lh_node, rh_node) {
         panic!("But you can't AND those!");
     }
+*/
 
     let lh_ast_node = graph[lh_node].clone();
     let rh_ast_node = graph[rh_node].clone();
@@ -112,125 +113,35 @@ pub fn reduce_into_and(graph: &mut LdAstGraph, lh_node: NodeIndex, rh_node: Node
     let rh_weight = graph.remove_node(rh_node).unwrap();
 
     // Create AND node
-    let and0 = &AstNode{ kind: AstNodeKind::Operation(OperationKind::And) };
-    let and0_n = graph.add_node(and0.clone());
+    let op_ast_node = &AstNode{ kind: AstNodeKind::Operation(op_kind) };
+    let op_node = graph.add_node(op_ast_node.clone());
     // Create new nodes for lh, an rh
     let new_lh_node = graph.add_node(lh_weight);
     let new_rh_node = graph.add_node(rh_weight);
 
     // Connect lh and rh nodes to new AND node
     graph.extend_with_edges(&[
-        (new_lh_node, and0_n, EdgeKind::Operands),
-        (new_rh_node, and0_n, EdgeKind::Operands),
+        (new_lh_node, op_node, EdgeKind::Operands),
+        (new_rh_node, op_node, EdgeKind::Operands),
     ]);
 
-    for op_node in lh_operands {
-        graph.add_edge(op_node, new_lh_node, EdgeKind::Operands);
+    for node in lh_operands {
+        graph.add_edge(node, new_lh_node, EdgeKind::Operands);
     }
-    for op_node in rh_operands {
-        graph.add_edge(op_node, new_rh_node, EdgeKind::Operands);
+    for node in rh_operands {
+        graph.add_edge(node, new_rh_node, EdgeKind::Operands);
     }
 
     // Reconnect edges based on what existed prior
-    for src_node in lh_sources {
-        graph.add_edge(src_node, and0_n, EdgeKind::Edge);
+    for node in lh_sources {
+        graph.add_edge(node, op_node, EdgeKind::Edge);
     }
-    for sink_node in rh_sinks {
-        graph.add_edge(and0_n, sink_node, EdgeKind::Edge);
-    }
-
-    write_dot_to_png(
-        &format!("{:?} {:?}-{:?}_and.png", and0, lh_ast_node, rh_ast_node),
-        &format!("{:?}", Dot::new(&*graph)),
-    );
-}
-
-#[allow(unused)]
-pub fn reduce_into_or(graph: &mut LdAstGraph, lh_node: NodeIndex, rh_node: NodeIndex) {
-    // TODO Return new resulting node?
-    // TODO Return Result<>
-
-    // Single sink/source, and edges_connecting also single
-    if !nodes_could_or(&graph, lh_node, rh_node) {
-        panic!("But you can't OR those!");
-    }
-
-    let lh_ast_node = graph[lh_node].clone();
-    let rh_ast_node = graph[rh_node].clone();
-
-    // Store sources from lh_node, and sinks from rh_node
-    let mut lh_source_edges: Vec<_> = graph.edges_directed(lh_node, petgraph::Incoming).collect();
-    let lh_operands: Vec<_> = lh_source_edges.drain_filter(|edge_ref| {
-        match edge_ref.weight() {
-            EdgeKind::Edge => false,
-            EdgeKind::Operands => true,
-        }
-    })
-    .map(|edge_ref| {
-        edge_ref.source()
-    }).collect();
-
-    let lh_operands_ids: Vec<_> = lh_operands.iter().map(|&op| {
-        graph[op].clone()
-    }).collect();
-
-    let mut rh_source_edges: Vec<_> = graph.edges_directed(rh_node, petgraph::Incoming).collect();
-    let rh_operands: Vec<_> = rh_source_edges.drain_filter(|edge_ref| {
-        match edge_ref.weight() {
-            EdgeKind::Edge => false,
-            EdgeKind::Operands => true,
-        }
-    })
-    .map(|edge_ref| {
-        edge_ref.source()
-    }).collect();
-
-    let rh_operands_ids: Vec<_> = rh_operands.iter().map(|&op| {
-        graph[op].clone()
-    }).collect();
-
-    let lh_sources: Vec<NodeIndex> = lh_source_edges.iter().map(|edge_ref| {
-        edge_ref.source()
-    }).collect();
-    let rh_sinks:   Vec<NodeIndex> = graph.neighbors_directed(rh_node, petgraph::Outgoing).collect();
-
-    // Remove nodes and store weights
-    let lh_weight = graph.remove_node(lh_node).unwrap();
-    let rh_weight = graph.remove_node(rh_node).unwrap();
-
-    // Create AND node
-    let or0 = &AstNode{ kind: AstNodeKind::Operation(OperationKind::Or) };
-    let or0_n = graph.add_node(or0.clone());
-    // Create new nodes for lh, an rh
-    let new_lh_node = graph.add_node(lh_weight);
-    let new_rh_node = graph.add_node(rh_weight);
-
-    // Connect lh and rh nodes to new AND node
-    let new_lh_node_id = graph[new_lh_node].clone();
-    let new_rh_node_id = graph[new_rh_node].clone();
-    let or0_id = graph[or0_n].clone();
-    graph.extend_with_edges(&[
-        (new_lh_node, or0_n, EdgeKind::Operands),
-        (new_rh_node, or0_n, EdgeKind::Operands),
-    ]);
-
-    for op_node in lh_operands {
-        graph.add_edge(op_node, new_lh_node, EdgeKind::Operands);
-    }
-    for op_node in rh_operands {
-        graph.add_edge(op_node, new_rh_node, EdgeKind::Operands);
-    }
-
-    // Reconnect edges based on what existed prior
-    for src_node in lh_sources {
-        graph.add_edge(src_node, or0_n, EdgeKind::Edge);
-    }
-    for sink_node in rh_sinks {
-        graph.add_edge(or0_n, sink_node, EdgeKind::Edge);
+    for node in rh_sinks {
+        graph.add_edge(op_node, node, EdgeKind::Edge);
     }
 
     write_dot_to_png(
-        &format!("{:?} {:?}-{:?}_or.png", or0, lh_ast_node, rh_ast_node),
+        &format!("{:?} {:?}-{:?}_and.png", op_ast_node, lh_ast_node, rh_ast_node),
         &format!("{:?}", Dot::new(&*graph)),
     );
 }
@@ -250,7 +161,7 @@ pub fn reduce(mut graph: &mut LdAstGraph) -> bool {
         for sibling in lh_siblings {
             if lh_node != sibling {
                 if nodes_could_or(&graph, lh_node, sibling) {
-                    reduce_into_or(&mut graph, lh_node, sibling);
+                    reduce_into_operation(&mut graph, lh_node, sibling, OperationKind::Or);
                     return true
                 }
             }
@@ -264,7 +175,7 @@ pub fn reduce(mut graph: &mut LdAstGraph) -> bool {
         for child in lh_children {
             if lh_node != child {
                 if nodes_could_and(&graph, lh_node, child) {
-                    reduce_into_and(&mut graph, lh_node, child);
+                    reduce_into_operation(&mut graph, lh_node, child, OperationKind::And);
                     return true
                 }
             }
