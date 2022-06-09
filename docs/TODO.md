@@ -1,3 +1,7 @@
+# Current work
+Removing pools, ids, and using cloneable node weights
+Works, with clones added generously
+Con - Added some Unknown/None variants and default... need to remove these
 
 # Current TODO
 PROBLEM: I think processing ands is happening in the wrong order

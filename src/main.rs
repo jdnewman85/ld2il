@@ -20,25 +20,24 @@ pub enum EdgeKind {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut node_pool = ld2il::NodePool::new();
-    let x00 = node_pool.new_node(ld2il::NodeKind::Contact, "X00");
-    let x01 = node_pool.new_node(ld2il::NodeKind::Contact, "X01");
-    let x02 = node_pool.new_node(ld2il::NodeKind::Contact, "X02");
-    let x03 = node_pool.new_node(ld2il::NodeKind::Contact, "X03");
-    let x04 = node_pool.new_node(ld2il::NodeKind::Contact, "X04");
-    let x05 = node_pool.new_node(ld2il::NodeKind::Contact, "X05");
-    let x06 = node_pool.new_node(ld2il::NodeKind::Contact, "X06");
-    let x07 = node_pool.new_node(ld2il::NodeKind::Contact, "X07");
-    let x08 = node_pool.new_node(ld2il::NodeKind::Contact, "X08");
-    let x09 = node_pool.new_node(ld2il::NodeKind::Contact, "X09");
-    let x10 = node_pool.new_node(ld2il::NodeKind::Contact, "X10");
-    let x11 = node_pool.new_node(ld2il::NodeKind::Contact, "X11");
-    let x12 = node_pool.new_node(ld2il::NodeKind::Contact, "X12");
-    let x13 = node_pool.new_node(ld2il::NodeKind::Contact, "X13");
-    let y00 = node_pool.new_node(ld2il::NodeKind::Coil,    "Y00");
-    let y01 = node_pool.new_node(ld2il::NodeKind::Coil,    "Y01");
+    let x00 = Node{kind: ld2il::NodeKind::Contact, tag: "X00".into()};
+    let x01 = Node{kind: ld2il::NodeKind::Contact, tag: "X01".into()};
+    let x02 = Node{kind: ld2il::NodeKind::Contact, tag: "X02".into()};
+    let x03 = Node{kind: ld2il::NodeKind::Contact, tag: "X03".into()};
+    let x04 = Node{kind: ld2il::NodeKind::Contact, tag: "X04".into()};
+    let x05 = Node{kind: ld2il::NodeKind::Contact, tag: "X05".into()};
+    let x06 = Node{kind: ld2il::NodeKind::Contact, tag: "X06".into()};
+    let x07 = Node{kind: ld2il::NodeKind::Contact, tag: "X07".into()};
+    let x08 = Node{kind: ld2il::NodeKind::Contact, tag: "X08".into()};
+    let x09 = Node{kind: ld2il::NodeKind::Contact, tag: "X09".into()};
+    let x10 = Node{kind: ld2il::NodeKind::Contact, tag: "X10".into()};
+    let x11 = Node{kind: ld2il::NodeKind::Contact, tag: "X11".into()};
+    let x12 = Node{kind: ld2il::NodeKind::Contact, tag: "X12".into()};
+    let x13 = Node{kind: ld2il::NodeKind::Contact, tag: "X13".into()};
+    let y00 = Node{kind: ld2il::NodeKind::Coil,    tag: "Y00".into()};
+    let y01 = Node{kind: ld2il::NodeKind::Coil,    tag: "Y01".into()};
 
-    let mut ld = Graph::<NodeId, EdgeKind>::new();
+    let mut ld = Graph::<Node, EdgeKind>::new();
     let x00_n = ld.add_node(x00);
     let x01_n = ld.add_node(x01);
     let x02_n = ld.add_node(x02);
@@ -75,10 +74,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 
     // Convert
-    let mut ast_node_pool = ld2il::AstNodePool::new();
     let ast_ld = ld.map(
-        |_, &node| {
-            ast_node_pool.new_node(AstNodeKind::Node(node))
+        |_, node| {
+            AstNode{ kind: AstNodeKind::Node(node.clone()) }
         },
         |_, &edge| {
             edge
@@ -91,12 +89,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         "0.png",
         &format!("{:?}", Dot::new(&ast_ld)),
     );
-    while reduce(&mut ast_ld, &mut ast_node_pool) {}
+    while reduce(&mut ast_ld) {}
 
-    let pretty = ast_ld.map(| _, &ast_node_id| {
-        let node_kind = ast_node_pool.nodes[ast_node_id.id].kind;
+    let pretty = ast_ld.map(| _, ast_node| {
+        let node_kind = &ast_node.kind;
         match node_kind {
-            AstNodeKind::Node(node_id) => node_pool.nodes[node_id.id].label.clone(),
+            AstNodeKind::None => "NONE".into(),
+            AstNodeKind::Node(node) => node.tag.clone(),
             AstNodeKind::Operation(op_kind) => format!("{:?}", op_kind),
         }
     },
