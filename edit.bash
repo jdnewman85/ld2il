@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
+todo_source=$(fd 'TODO' 'docs')
 main_source=$(fd 'main.rs' 'src')
 sources=$(fd '.rs' --exclude 'main.rs' 'src')
 
-$EDITOR ${main_source} ${sources}
+$EDITOR ${todo_source} ${main_source} ${sources}
