@@ -59,7 +59,7 @@ where N: std::fmt::Debug + Clone
     let mut visitor = DfsPostOrder::new(graph, starting_output);
     visitor.stack.push(s2);
     while let Some(nx) = visitor.next(graph) {
-        let node = graph[nx].clone();
+        let node = &graph[nx];
         println!("{:?}", node);
     }
 }
@@ -69,7 +69,6 @@ pub fn print_reduced_pretty_il_test(graph: &Graph<String, EdgeKind>, starting_ou
 {
     let mut g = graph.clone();
     g.reverse();
-
     print_il_test(&g.into(), starting_output, s2)
 }
 

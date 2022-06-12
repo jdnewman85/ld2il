@@ -73,16 +73,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 
     // Convert
-    let ast_ld = ld.map(
+    let mut ast_ld: LdAstGraph = ld.map(
         |_, node| {
             AstNode{ kind: AstNodeKind::Node(node.clone()) }
         },
         |_, &edge| {
             edge
         },
-    );
-
-    let mut ast_ld: LdAstGraph = ast_ld.into();
+    ).into();
 
     write_graph_to_png(&ast_ld, "0.png");
     while reduce(&mut ast_ld) {}
