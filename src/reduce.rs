@@ -1,11 +1,10 @@
 use crate::EdgeKind;
 use crate::ld2il::*;
-use crate::write_dot_to_png;
+use crate::write_graph_to_png;
 
 use petgraph::stable_graph::NodeIndex;
 use petgraph::stable_graph::StableGraph;
 use petgraph::visit::Topo;
-use petgraph::dot::Dot;
 use petgraph::visit::EdgeRef;
 
 use std::collections::HashSet;
@@ -140,10 +139,8 @@ pub fn reduce_into_operation(graph: &mut LdAstGraph, lh_node: NodeIndex, rh_node
         graph.add_edge(op_node, node, EdgeKind::Edge);
     }
 
-    write_dot_to_png(
-        &format!("{:?} {:?}-{:?}_and.png", op_ast_node, lh_ast_node, rh_ast_node),
-        &format!("{:?}", Dot::new(&*graph)),
-    );
+    let filename = &format!("{:?} {:?}-{:?}_and.png", op_ast_node, lh_ast_node, rh_ast_node);
+    write_graph_to_png(graph, filename);
 }
 
 #[allow(unused)]

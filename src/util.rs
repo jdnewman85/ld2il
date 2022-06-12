@@ -1,16 +1,37 @@
 use crate::EdgeKind;
 pub use crate::ld2il::*;
 
-use petgraph::{graph::Graph, visit::DfsPostOrder};
+use petgraph::dot::Dot;
+use petgraph::graph::Graph;
+use petgraph::visit::DfsPostOrder;
 use petgraph::stable_graph::{StableGraph, NodeIndex};
 use petgraph::visit::Topo;
 
 use std::{process::{Command, Stdio}, io::Write, path::Path};
 
 #[allow(unused)]
-pub fn write_dot_to_png<S>(filename: S, dot: S)
-where S: Into<String> + Clone
+pub fn to_pretty(graph: &StableGraph<AstNode, EdgeKind>) -> StableGraph<String, EdgeKind>
 {
+    graph.map(| _, ast_node| {
+        let node_kind = &ast_node.kind;
+        match node_kind {
+            AstNodeKind::None => "NONE".into(),
+            AstNodeKind::Node(node) => node.tag.clone(),
+            AstNodeKind::Operation(op_kind) => format!("{:?}", op_kind),
+        }
+    },
+    |_, &edge_id| {
+        edge_id
+    })
+}
+
+#[allow(unused)]
+pub fn write_graph_to_png<N, S>(graph: &StableGraph<N, EdgeKind>, filename: S)
+where N: std::fmt::Debug + Clone,
+      S: Into<String> + Clone
+{
+    let dot = &format!("{:?}", Dot::new(&graph));
+
     let file_string: String = filename.into();
     let out_path = Path::new("./dot/").join(&file_string);
 //  println!("Writing dot {:?}", &out_path);
@@ -23,13 +44,12 @@ where S: Into<String> + Clone
 
     {
         let mut stdin = cmd.stdin.take().unwrap();
-        stdin.write_all(dot.into().as_bytes()).unwrap();
+        stdin.write_all(dot.as_bytes()).unwrap();
     }
     cmd.wait();
     //println!("Finished");
 }
 
-// TODO Generalize over nodes?
 #[allow(unused)]
 pub fn print_il_test<N>(graph: &StableGraph<N, EdgeKind>, starting_output: NodeIndex, s2: NodeIndex)
 where N: std::fmt::Debug + Clone
@@ -42,6 +62,15 @@ where N: std::fmt::Debug + Clone
         let node = graph[nx].clone();
         println!("{:?}", node);
     }
+}
+
+#[allow(unused)]
+pub fn print_reduced_pretty_il_test(graph: &Graph<String, EdgeKind>, starting_output: NodeIndex, s2: NodeIndex)
+{
+    let mut g = graph.clone();
+    g.reverse();
+
+    print_il_test(&g.into(), starting_output, s2)
 }
 
 #[allow(unused)]

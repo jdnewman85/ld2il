@@ -7,7 +7,6 @@ pub use crate::util::*;
 pub mod reduce;
 pub use crate::reduce::*;
 
-use petgraph::dot::Dot;
 use petgraph::graph::Graph;
 
 use std::error::Error;
@@ -85,34 +84,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut ast_ld: LdAstGraph = ast_ld.into();
 
-    write_dot_to_png(
-        "0.png",
-        &format!("{:?}", Dot::new(&ast_ld)),
-    );
+    write_graph_to_png(&ast_ld, "0.png");
     while reduce(&mut ast_ld) {}
 
-    let pretty = ast_ld.map(| _, ast_node| {
-        let node_kind = &ast_node.kind;
-        match node_kind {
-            AstNodeKind::None => "NONE".into(),
-            AstNodeKind::Node(node) => node.tag.clone(),
-            AstNodeKind::Operation(op_kind) => format!("{:?}", op_kind),
-        }
-    },
-    |_, &edge_id| {
-        edge_id
-    });
-    write_dot_to_png(
-        "pretty_end.png",
-        &format!("{:?}", Dot::new(&pretty)),
-    );
+    let pretty = to_pretty(&ast_ld);
+    write_graph_to_png(&pretty,"pretty_end.png");
 
-    let pretty: Graph<_, _> = pretty.into();
-
-    let mut pretty = pretty.clone();
-    pretty.reverse();
-
-    print_il_test(&pretty.into(), y00_n, y01_n);
+    print_reduced_pretty_il_test(&pretty.into(), y00_n, y01_n);
 
     Ok(())
 }
